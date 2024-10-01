@@ -14,6 +14,9 @@ import RegisterPage from "./pages/auth/RegisterPage.jsx";
 import AuthLayout from "./pages/auth/AuthLayout.jsx";
 import LoginPage from "./pages/auth/LoginPage.jsx";
 import OTPVerifyPage from "./pages/auth/OTPVerifyPage.jsx";
+import { Provider } from "react-redux";
+import { store } from "@redux/store";
+
 const HomePage = lazy(() => import("./pages/HomePage.jsx"));
 
 const router = createBrowserRouter([
@@ -48,9 +51,11 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <ThemeProvider theme={theme}>
-    <ModalProvider>
-      <RouterProvider router={router}></RouterProvider>
-    </ModalProvider>
-  </ThemeProvider>
+  <Provider store={store}>
+    <ThemeProvider theme={theme}>
+      <ModalProvider>
+        <RouterProvider router={router}></RouterProvider>
+      </ModalProvider>
+    </ThemeProvider>
+  </Provider>
 );

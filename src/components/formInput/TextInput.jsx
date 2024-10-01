@@ -1,6 +1,7 @@
 import { TextField } from "@mui/material";
 
-const TextInput = ({ onChange, value, name, type = "text" }) => {
+const TextInput = ({ onChange, value, name, type = "text", error
+ }) => {
   return (
     // slotProps de them funtion cho tuy chinh doc tren document cua mui
     <TextField
@@ -13,6 +14,8 @@ const TextInput = ({ onChange, value, name, type = "text" }) => {
       onChange={onChange}
       value={value}
       type={type}
+      // neu loi la bao do
+      error={error}
     />
   );
 };
