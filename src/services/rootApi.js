@@ -14,7 +14,7 @@ const baseQuery =  fetchBaseQuery({
 });
 const baseQueryWithForceLogout = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions)
-  console.log({args})
+console.log({api})
   if(result?.error?.status === 401){
     api.dispatch(logout());
     // clear het du lieu trong storage

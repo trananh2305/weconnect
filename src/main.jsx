@@ -58,13 +58,13 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <PersistGate loading={<p>Loading...</p>} persistor={persistor}>
-    <Provider store={store}>
+  <Provider store={store}>
+    <PersistGate loading={<p>Loading...</p>} persistor={persistor}>
       <ThemeProvider theme={theme}>
         <ModalProvider>
           <RouterProvider router={router}></RouterProvider>
         </ModalProvider>
       </ThemeProvider>
-    </Provider>
-  </PersistGate>
+    </PersistGate>
+  </Provider>
 );
