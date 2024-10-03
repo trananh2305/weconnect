@@ -4,10 +4,10 @@ import { Suspense } from "react";
 import { Alert, Snackbar } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { closeSnackbar } from "@redux/slices/snackbarSlice";
-
-
 const RootLayout = () => {
   const dispatch = useDispatch();
+  const data = useSelector((state) => state.snackbar);
+  console.log({ data });
   // lay ra du lieu tu store
   const { open, type, message } = useSelector((state) => {
     console.log({ state });
@@ -27,7 +27,7 @@ const RootLayout = () => {
         onClose={() => {
           dispatch(closeSnackbar());
         }}
-        anchorOrigin={{vertical: "top", horizontal:"right"}}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
         <Alert
           // onClose={handleClose}

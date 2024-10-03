@@ -15,7 +15,9 @@ import AuthLayout from "./pages/auth/AuthLayout.jsx";
 import LoginPage from "./pages/auth/LoginPage.jsx";
 import OTPVerifyPage from "./pages/auth/OTPVerifyPage.jsx";
 import { Provider } from "react-redux";
-import { store } from "@redux/store";
+import { persistor, store } from "@redux/store";
+import ProtectedLayOut from "@pages/ProtectedLayOut";
+import { PersistGate } from "redux-persist/integration/react";
 
 const HomePage = lazy(() => import("./pages/HomePage.jsx"));
 
@@ -26,8 +28,13 @@ const router = createBrowserRouter([
     // tung trang rieng
     children: [
       {
-        path: "/",
-        element: <HomePage />,
+        element: <ProtectedLayOut />,
+        children: [
+          {
+            path: "/",
+            element: <HomePage />,
+          },
+        ],
       },
       {
         element: <AuthLayout />,
@@ -51,11 +58,13 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <Provider store={store}>
-    <ThemeProvider theme={theme}>
-      <ModalProvider>
-        <RouterProvider router={router}></RouterProvider>
-      </ModalProvider>
-    </ThemeProvider>
-  </Provider>
+  <PersistGate loading={<p>Loading...</p>} persistor={persistor}>
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <ModalProvider>
+          <RouterProvider router={router}></RouterProvider>
+        </ModalProvider>
+      </ThemeProvider>
+    </Provider>
+  </PersistGate>
 );
