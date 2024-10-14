@@ -15,7 +15,7 @@ const RootLayout = () => {
   });
 
   return (
-    <div>
+    <div className="text-dark-100">
       {/* Outlet la 1 component dac biet cua react de render ra cac component con */}
       {/* suspense de chia js */}
       <Suspense fallback={<p>Loading</p>}>

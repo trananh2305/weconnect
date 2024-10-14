@@ -14,6 +14,7 @@ import {
   REHYDRATE,
 } from "redux-persist";
 import { logOutMiddleware } from "./middlewares";
+import settingReducer from "./slices/settingSlice"
 
 const persistConfig = {
   key: "root",
@@ -28,6 +29,7 @@ const persistedReducer = persistReducer(
   combineReducers({
     auth: authReducer,
     snackbar: snackbarReducer,
+    settings: settingReducer,
     [rootApi.reducerPath]: rootApi.reducer,
   })
 );

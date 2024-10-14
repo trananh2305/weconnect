@@ -33,6 +33,10 @@ const LoginPage = () => {
     getValues,
   } = useForm({
     resolver: yupResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
   function onSubmit(formData) {
     console.log({ formData });

@@ -26,6 +26,9 @@ const OTPVerifyPage = () => {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(formSchema),
+    defaultValues:{
+      otp:''
+    }
   });
   const [verifyOTP, { data, isError, isSuccess, error }] =
     useVerifyOTPMutation();

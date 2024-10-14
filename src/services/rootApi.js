@@ -19,7 +19,7 @@ console.log({api})
     api.dispatch(logout());
     // clear het du lieu trong storage
     // await persistor.purge();
-    window.location.href = '/login'
+    window.location.href = "/login"
   }
   return result;
 }
