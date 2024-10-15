@@ -1,6 +1,7 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authReducer from "./slices/authSlice";
 import snackbarReducer from "./slices/snackbarSlice";
+import dialogReducer from "./slices/dialogSlice";
 import { rootApi } from "@services/rootApi";
 import storage from "redux-persist/lib/storage"; //mac dinh dung web thi la local storage
 import {
@@ -14,7 +15,7 @@ import {
   REHYDRATE,
 } from "redux-persist";
 import { logOutMiddleware } from "./middlewares";
-import settingReducer from "./slices/settingSlice"
+import settingReducer from "./slices/settingSlice";
 
 const persistConfig = {
   key: "root",
@@ -30,6 +31,7 @@ const persistedReducer = persistReducer(
     auth: authReducer,
     snackbar: snackbarReducer,
     settings: settingReducer,
+    dialog: dialogReducer,
     [rootApi.reducerPath]: rootApi.reducer,
   })
 );

@@ -5,7 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 // import MovieDetail from "./pages/MovieDetail.jsx"; // Correct import for MovieDetail
 import RootLayout from "./pages/RootLayout.jsx";
 // import TVShowDetail from "./pages/TVShowDetail.jsx";
-import ModalProvider from "./context/ModalProvider.jsx";
+// import ModalProvider from "./context/ModalProvider.jsx";
 // import PeoplePage from "./pages/PeoplePage.jsx";
 import { lazy } from "react";
 import { ThemeProvider } from "@emotion/react";
@@ -18,6 +18,7 @@ import { Provider } from "react-redux";
 import { persistor, store } from "@redux/store";
 import ProtectedLayOut from "@pages/ProtectedLayOut";
 import { PersistGate } from "redux-persist/integration/react";
+import Dialog from "@components/Dialog";
 
 const HomePage = lazy(() => import("./pages/HomePage.jsx"));
 
@@ -61,9 +62,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
     <PersistGate loading={<p>Loading...</p>} persistor={persistor}>
       <ThemeProvider theme={theme}>
-        <ModalProvider>
+        {/* <ModalProvider> */}
           <RouterProvider router={router}></RouterProvider>
-        </ModalProvider>
+          <Dialog/>
+        {/* </ModalProvider> */}
       </ThemeProvider>
     </PersistGate>
   </Provider>
