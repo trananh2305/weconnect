@@ -7,7 +7,7 @@ const HomePage = () => {
   return (
     <div className="flex gap-4 p-6 bg-dark-200 ">
       <SideBar />
-      <div className="flex-1">
+      <div className="flex-1 flex flex-col gap-4">
         <PostCreation />
         <PostList />
       </div>

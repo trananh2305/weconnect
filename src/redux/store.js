@@ -21,7 +21,11 @@ const persistConfig = {
   key: "root",
   version: 1,
   storage,
-  blacklist: [rootApi.reducerPath],
+  blacklist: [
+    rootApi.reducerPath,
+    "dialog",
+    "settings"
+  ],
 };
 // dung de luu du lieu len local storage
 const persistedReducer = persistReducer(

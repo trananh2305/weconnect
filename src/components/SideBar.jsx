@@ -1,6 +1,7 @@
-import { useTheme } from "@emotion/react";
-import { HomeOutlined, Hub, Message, People } from "@mui/icons-material";
-import { Drawer, List, ListSubheader, useMediaQuery } from "@mui/material";
+
+import { useDetectLayout } from "@hooks/index";
+import { HomeOutlined, Hub, Language, LockPerson, Message, People } from "@mui/icons-material";
+import { Drawer, List, ListSubheader,  } from "@mui/material";
 import { toggleDrawer } from "@redux/slices/settingSlice";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -9,11 +10,10 @@ import { Link } from "react-router-dom";
 const SideBar = () => {
   const isShowDrawer = useSelector((state) => state.settings.isShowDrawer);
   const dispatch = useDispatch();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  return isMobile ? (
+  const {isMediumLayout} = useDetectLayout();
+  return isMediumLayout ? (
     <Drawer open={isShowDrawer} onClose={() => dispatch(toggleDrawer())} classes={{paper: 'p-4 flex flex-col !bg-dark-200'}}>
-      <div>
+      <div className="mb-4">
         <Link to="/">
           {" "}
           <img src="/weconnect-logo.png" alt="" className="w-8 h-8 " />
@@ -48,10 +48,10 @@ const SideBarContent = () => {
       <List className="flex flex-col !py-3 !px-4 bg-white shadow rounded">
         <ListSubheader className="!px-0 !leading-none">Settings</ListSubheader>
         <Link to="/setting/account" className="flex items-center gap-1">
-          <HomeOutlined fontSize="small" /> Account
+          <LockPerson fontSize="small" /> Account
         </Link>
         <Link to="/setting/languages" className="flex items-center gap-1">
-          <HomeOutlined fontSize="small" /> Languages
+          <Language fontSize="small" /> Languages
         </Link>
       </List>
     </div>

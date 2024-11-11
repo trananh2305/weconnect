@@ -43,6 +43,7 @@ const OTPVerifyPage = () => {
     if (isSuccess) {
       dispatch(openSnackbar({ message: "Login successfully!" }));
       dispatch(login(data));
+      console.log({data})
       // navigate co the truyen ca gia tri
       navigate("/");
     }
@@ -68,7 +69,7 @@ const OTPVerifyPage = () => {
         </Button>
       </form>
       <p className="mt-4">
-        Did&apos; get the code?{" "}
+          
         <Link className="text-sky-600" to="/login">
           Resend
         </Link>

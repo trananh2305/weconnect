@@ -18,7 +18,8 @@ import { Provider } from "react-redux";
 import { persistor, store } from "@redux/store";
 import ProtectedLayOut from "@pages/ProtectedLayOut";
 import { PersistGate } from "redux-persist/integration/react";
-import Dialog from "@components/Dialog";
+import Dialog from "@components/dialog/Dialog";
+import Loading from "@components/Loading";
 
 const HomePage = lazy(() => import("./pages/HomePage.jsx"));
 
@@ -60,11 +61,11 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
-    <PersistGate loading={<p>Loading...</p>} persistor={persistor}>
+    <PersistGate loading={<Loading />} persistor={persistor}>
       <ThemeProvider theme={theme}>
         {/* <ModalProvider> */}
-          <RouterProvider router={router}></RouterProvider>
-          <Dialog/>
+        <RouterProvider router={router}></RouterProvider>
+        <Dialog />
         {/* </ModalProvider> */}
       </ThemeProvider>
     </PersistGate>

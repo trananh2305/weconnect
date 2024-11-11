@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { Alert, Snackbar } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { closeSnackbar } from "@redux/slices/snackbarSlice";
+import Loading from "@components/Loading";
 const RootLayout = () => {
   const dispatch = useDispatch();
   const data = useSelector((state) => state.snackbar);
@@ -18,7 +19,7 @@ const RootLayout = () => {
     <div className="text-dark-100">
       {/* Outlet la 1 component dac biet cua react de render ra cac component con */}
       {/* suspense de chia js */}
-      <Suspense fallback={<p>Loading</p>}>
+      <Suspense fallback={<Loading />}>
         <Outlet />
       </Suspense>
       <Snackbar

@@ -47,6 +47,7 @@ const LoginPage = () => {
     // if(isError){
     //   dispatch(openSnackbar({ type: "error",message: error?.data?.message }));
     // }
+    // console.log({isSuccess})
     if (isSuccess) {
       dispatch(openSnackbar({ message: data.message }));
       // navigate co the truyen ca gia tri
