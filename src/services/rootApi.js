@@ -17,8 +17,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
   // console.log({ api });
 
   if (
-    result?.error?.status === 401 &&
-    result?.error?.data?.message === "Token has expired"
+    result?.error?.status === 401
   ) {
     // api.dispatch(logout());
     // clear het du lieu trong storage
@@ -46,7 +45,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
         );
         result = await baseQuery({ args, api, extraOptions });
       } else {
-        api.dispatch(logout());
+         await api.dispatch(logout());
         // clear het du lieu trong storage
         // await persistor.purge();
         window.location.href = "/login";
