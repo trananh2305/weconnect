@@ -14,15 +14,8 @@ const baseQuery = fetchBaseQuery({
 });
 const baseQueryWithReauth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
-  // console.log({ api });
 
-  if (
-    result?.error?.status === 401
-  ) {
-    // api.dispatch(logout());
-    // clear het du lieu trong storage
-    // await persistor.purge();
-    // window.location.href = "/login";
+  if (result?.error?.status === 401) {
     const refreshToken = api.getState().auth.refreshToken;
     if (refreshToken) {
       // goi den server de verify de nhan lai access token moi
@@ -43,11 +36,9 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
             refreshToken,
           })
         );
-        result = await baseQuery({ args, api, extraOptions });
+        result = await baseQuery(args, api, extraOptions);
       } else {
-         await api.dispatch(logout());
-        // clear het du lieu trong storage
-        // await persistor.purge();
+        await api.dispatch(logout());
         window.location.href = "/login";
       }
     }
@@ -112,19 +103,19 @@ export const rootApi = createApi({
           };
         },
         // trigger tu dong goi api lay lai post
-        invalidatesTags: ['POSTS']
+        invalidatesTags: ["POSTS"],
       }),
       getPost: builder.query({
         // tu hieu la get nho RTK
-        query: ({limit, offset} = {}) => {
+        query: ({ limit, offset } = {}) => {
           return {
             url: "/posts",
             method: "GET",
             params: { limit, offset },
           };
         },
-        providesTags: ['POSTS']
-      }), 
+        providesTags: ["POSTS"],
+      }),
     };
   },
 });
@@ -137,5 +128,5 @@ export const {
   useGetAuthUserQuery,
   useCreatePostMutation,
   useRefreshTokenMutation,
-  useGetPostQuery
+  useGetPostQuery,
 } = rootApi;

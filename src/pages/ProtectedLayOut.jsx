@@ -14,16 +14,6 @@ const ProtectedLayOut = () => {
     }
   }, [response.isSuccess, response.data, dispatch]);
   console.log({ response });
-  // if (response.isLoading) {
-  //   return <p>Loading..</p>;
-  // }
-  // if (!response?.data?._id) {
-  //   return <Navigate to="/login" />;
-  // }
-
-  // if (response.error?.code === 401) {
-  //   return <Navigate to="/login" />;
-  // }
   return (
     <div>
       <Header />
