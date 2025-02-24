@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { useTheme } from "@emotion/react";
 import { useMediaQuery } from "@mui/material";
 import { useState } from "react";
-import { useGetPostQuery } from "@services/rootApi";
+import { useGetPostQuery, useSearchUsersQuery } from "@services/rootApi";
 import { useRef } from "react";
 import { useEffect } from "react";
 import { useCallback } from "react";
@@ -59,8 +59,45 @@ export const useLazyLoadPosts = () => {
   const loadMore = useCallback(() => {
     setOffset((offset) => offset + limit);
   }, []);
-  useInfiniteScroll({hasMore, loadMore, isFetching});
+  useInfiniteScroll({ hasMore, loadMore, isFetching });
   return { hasMore, loadMore, isFetching, posts };
+};
+
+export const useLazyLoadSearchFriends = ({ searchQuery }) => {
+  const [offset, setOffset] = useState(0);
+  let limit = 10;
+  const [friends, setFriends] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+
+  const { data, isSuccess, isFetching } = useSearchUsersQuery({
+    offset,
+    limit,
+    searchQuery,
+  });
+  console.log("data: ", data);
+  const preDataRef = useRef();
+
+  useEffect(() => {
+    if (isSuccess && data?.users && preDataRef.current !== data?.users) {
+      if (data.total <= offset + data.users.length) {
+        setHasMore(false);
+        return
+      }
+      preDataRef.current = data?.users;
+      setFriends((prev) => {
+        return [...prev, ...data.users];
+      });
+    }
+  }, [isSuccess, data?.users, data?.total, offset]);
+
+  const loadMore = useCallback(() => {
+    if (hasMore && data?.users?.length) {
+      setOffset((offset) => offset + limit);
+    }
+  }, [hasMore, data?.users?.length, limit]);
+  useInfiniteScroll({ hasMore, loadMore, isFetching });
+  console.log("friends: ", friends);
+  return { hasMore, loadMore, isFetching, friends };
 };
 
 export const useInfiniteScroll = ({

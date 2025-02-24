@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100..900;1,100..900&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -7,12 +7,15 @@
 ::-webkit-scrollbar {
   width: 1px;
 }
-body{
+body {
   font-family: "Public Sans", sans-serif;
 }
 
-@layer components{
+@layer components {
   .card {
-    @apply rounded bg-white p-4 shadow
+    @apply rounded bg-white p-4 shadow;
+  }
+  .container {
+    @apply flex gap-4 p-6  max-w-6xl mx-auto;
   }
 }

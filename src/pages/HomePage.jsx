@@ -5,13 +5,13 @@ import SideBar from "@components/SideBar";
 
 const HomePage = () => {
   return (
-    <div className="flex gap-4 p-6 bg-dark-200 ">
+    <div className="container">
       <SideBar />
       <div className="flex-1 flex flex-col gap-4">
         <PostCreation />
         <PostList />
       </div>
-      <div className="w-64 hidden sm:block">
+      <div className="w-72 hidden sm:block">
         <FriendRequests />
       </div>
     </div>

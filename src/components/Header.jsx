@@ -1,4 +1,3 @@
-
 import { useDetectLayout, useLogout, useUserInfo } from "@hooks/index";
 
 import { Notifications, Search, Menu as MenuIcon } from "@mui/icons-material";
@@ -10,24 +9,25 @@ import {
   Menu,
   MenuItem,
   TextField,
-
 } from "@mui/material";
 import { toggleDrawer } from "@redux/slices/settingSlice";
 
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
   const userInfo = useUserInfo();
   const { logOut } = useLogout();
-  const {isMediumLayout} = useDetectLayout();
+  const { isMediumLayout } = useDetectLayout();
   const dispatch = useDispatch();
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
-
+  const navigate = useNavigate();
   const renderMenu = (
     <Menu
       open={!!anchorEl}
@@ -57,8 +57,8 @@ const Header = () => {
   };
   return (
     <>
-      <AppBar color="white" position="static" className="py-4 px-2">
-        <div className="flex justify-between items-center !min-h-fit">
+      <AppBar color="white" position="static" >
+        <div className="flex justify-between items-center !min-h-fit container">
           {isMediumLayout ? (
             <IconButton onClick={() => dispatch(toggleDrawer())}>
               <MenuIcon />
@@ -79,10 +79,25 @@ const Header = () => {
                     input: { className: "h-10 py-2 px-3" },
                     htmlInput: { className: "!p-0" },
                   }}
-                  sx={{'.MuiInputBase-root::before':{
-                    display:'none'
-                  }}}
+                  sx={{
+                    ".MuiInputBase-root::before": {
+                      display: "none",
+                    },
+                  }}
                   variant="standard"
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.currentTarget.value);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      navigate("/search/users", {
+                        state: {
+                          searchTerm,
+                        },
+                      });
+                    }
+                  }}
                 />
               </div>
             </div>
