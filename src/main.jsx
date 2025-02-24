@@ -20,6 +20,8 @@ import ProtectedLayOut from "@pages/ProtectedLayOut";
 import { PersistGate } from "redux-persist/integration/react";
 import Dialog from "@components/dialog/Dialog";
 import Loading from "@components/Loading";
+import MessagePage from "@pages/MessagePage";
+import SearchUserPage from "@pages/SearchUserPage";
 
 const HomePage = lazy(() => import("./pages/HomePage.jsx"));
 
@@ -36,6 +38,14 @@ const router = createBrowserRouter([
             path: "/",
             element: <HomePage />,
           },
+          {
+            path: "/messages",
+            element: <MessagePage/>
+          },
+          {
+            path: "/search/users",
+            element: <SearchUserPage/>
+          }
         ],
       },
       {
