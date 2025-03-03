@@ -5,12 +5,13 @@ import { useSelector } from "react-redux";
 import { useTheme } from "@emotion/react";
 import { useMediaQuery } from "@mui/material";
 import { useState } from "react";
-import { useGetPostQuery, useSearchUsersQuery } from "@services/rootApi";
+import {  useSearchUsersQuery } from "@services/rootApi";
 import { useRef } from "react";
 import { useEffect } from "react";
 import { useCallback } from "react";
 import { useMemo } from "react";
-import { throttle } from "lodash";
+import {  throttle } from "lodash";
+import { useGetPostQuery } from "@services/postApi";
 export const useLogout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -51,15 +52,27 @@ export const useLazyLoadPosts = () => {
       }
       preDataRef.current = data;
       setPosts((prev) => {
+        if (offset === 0) {
+          return data;
+        }
         return [...prev, ...data];
       });
     }
-  }, [isSuccess, data]);
+  }, [isSuccess, data, offset]);
 
   const loadMore = useCallback(() => {
     setOffset((offset) => offset + limit);
   }, []);
-  useInfiniteScroll({ hasMore, loadMore, isFetching });
+  useInfiniteScroll({
+    hasMore,
+    loadMore,
+    isFetching,
+    offset,
+    resetFunc: () => {
+      setOffset(0);
+      setHasMore(true);
+    },
+  });
   return { hasMore, loadMore, isFetching, posts };
 };
 
@@ -78,15 +91,17 @@ export const useLazyLoadSearchFriends = ({ searchQuery }) => {
   const preDataRef = useRef();
 
   useEffect(() => {
-    if (isSuccess && data?.users && preDataRef.current !== data?.users) {
-      if (data.total <= offset + data.users.length) {
-        setHasMore(false);
-        return
-      }
+    if ((isSuccess && data?.users) || preDataRef.current !== data?.users) {
+      console.log("aaaaaa");
+
       preDataRef.current = data?.users;
       setFriends((prev) => {
         return [...prev, ...data.users];
       });
+      if (data.total <= offset + data.users.length) {
+        setHasMore(false);
+        return;
+      }
     }
   }, [isSuccess, data?.users, data?.total, offset]);
 
@@ -95,7 +110,11 @@ export const useLazyLoadSearchFriends = ({ searchQuery }) => {
       setOffset((offset) => offset + limit);
     }
   }, [hasMore, data?.users?.length, limit]);
-  useInfiniteScroll({ hasMore, loadMore, isFetching });
+  useInfiniteScroll({
+    hasMore,
+    loadMore,
+    isFetching,
+  });
   console.log("friends: ", friends);
   return { hasMore, loadMore, isFetching, friends };
 };
@@ -104,6 +123,8 @@ export const useInfiniteScroll = ({
   hasMore,
   loadMore,
   isFetching,
+  offset,
+  resetFunc,
   threshold = 50,
   throttleTime = 300,
 }) => {
@@ -115,6 +136,11 @@ export const useInfiniteScroll = ({
       const scrollTop = document.documentElement.scrollTop; // để lấy ra chiều cao từ giao diện đến top của root
       const scrollHeight = document.documentElement.scrollHeight; //  để lấy được chiều cao root
       const clientHeight = document.documentElement.clientHeight; // để  lấy chiều cao giao diện
+
+      if (scrollTop < 100 && offset >  0){
+        resetFunc();
+        return;
+      }
 
       if (clientHeight + scrollTop + threshold >= scrollHeight && !isFetching) {
         loadMore();

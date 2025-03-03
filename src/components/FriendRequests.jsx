@@ -1,19 +1,19 @@
 import { Check, Close } from "@mui/icons-material";
 import { Avatar } from "@mui/material";
-import {
-  useAcceptFriendRequestMutation,
-  useCancelFriendRequestMutation,
-  useGetPendingRequestQuery,
-} from "@services/rootApi";
 import Loading from "./Loading";
 import { useEffect } from "react";
 import { socket } from "@context/SocketProvider";
 import Button from "./Button";
+import {
+  useAcceptFriendRequestMutation,
+  useCancelFriendRequestMutation,
+  useGetPendingRequestQuery,
+} from "@services/friendApi";
 
 const FriendRequestItem = ({ fullName, id }) => {
-  const [acceptFriendRequest, { isLoading: isAccepting}] =
+  const [acceptFriendRequest, { isLoading: isAccepting }] =
     useAcceptFriendRequestMutation();
-  const [cancelFriendRequest, { isLoading: isCanceling}] =
+  const [cancelFriendRequest, { isLoading: isCanceling }] =
     useCancelFriendRequestMutation();
   return (
     <div className="flex gap-2">
@@ -44,7 +44,13 @@ const FriendRequestItem = ({ fullName, id }) => {
 };
 
 const FriendRequests = () => {
-  const { data = [], isFetching, refetch } = useGetPendingRequestQuery();
+  const {
+    data = [],
+    isFetching,
+    refetch,
+  } = useGetPendingRequestQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
   if (isFetching) {
     <Loading />;
   }
@@ -52,6 +58,7 @@ const FriendRequests = () => {
     socket.on("friendRequestReceived", (data) => {
       console.log("[friend request]", data);
       if (data.from) {
+        // Refetch the data when a new friend request is received
         refetch();
       }
     });

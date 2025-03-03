@@ -8,12 +8,12 @@ import {
 } from "@mui/material";
 import { closeDialog } from "@redux/slices/dialogSlice";
 import { openSnackbar } from "@redux/slices/snackbarSlice";
-import { useCreatePostMutation } from "@services/rootApi";
+import { useCreatePostMutation } from "@services/postApi";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 
 const NewPostDialog = ({ userInfo }) => {
-  const [createPost, { data = {}, isSuccess, isLoading }] =
+  const [createPost, { isLoading }] =
     useCreatePostMutation();
   const [content, setContent] = useState("");
   const [image, setImage] = useState(null);

@@ -16,6 +16,7 @@ import {
 } from "redux-persist";
 import { logOutMiddleware } from "./middlewares";
 import settingReducer from "./slices/settingSlice";
+import { setupListeners } from "@reduxjs/toolkit/query";
 
 const persistConfig = {
   key: "root",
@@ -50,5 +51,7 @@ export const store = configureStore({
     }).concat(logOutMiddleware, rootApi.middleware);
   },
 });
+// dung chung voi refetchOnFocus va refetchOnReconnect
+setupListeners(store.dispatch)
 
 export const persistor = persistStore(store);

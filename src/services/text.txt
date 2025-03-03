@@ -1,0 +1,31 @@
+Kỹ thuật optimistic update
+Optimistic Update (Cập nhật lạc quan) là một kỹ thuật tối ưu hiệu suất trong lập trình, đặc biệt trong các ứng dụng web và mobile. Nó giúp cải thiện trải nghiệm người dùng bằng cách cập nhật giao diện ngay lập tức trước khi nhận phản hồi từ server, thay vì chờ đợi phản hồi rồi mới cập nhật.
+
+Cách hoạt động của Optimistic Update
+Cập nhật giao diện ngay lập tức: Khi người dùng thực hiện một hành động (ví dụ: nhấn nút "Like" bài viết), giao diện sẽ được cập nhật ngay lập tức để phản ánh thay đổi đó.
+Gửi yêu cầu lên server: Hệ thống gửi request cập nhật dữ liệu lên server.
+Xử lý phản hồi từ server:
+Nếu thành công, không cần làm gì thêm vì giao diện đã cập nhật trước đó.
+Nếu thất bại, hệ thống sẽ hoàn tác (rollback) về trạng thái ban đầu hoặc hiển thị thông báo lỗi.
+Ví dụ về Optimistic Update
+Ví dụ 1: Nút "Like" trong ứng dụng mạng xã hội
+Khi bạn nhấn "Like" một bài viết, số lượt like tăng ngay lập tức trên giao diện.
+Trong nền, ứng dụng gửi request lên server để cập nhật.
+Nếu request thành công, không có gì thay đổi. Nếu request thất bại, nút "Like" có thể bị bỏ chọn lại và số lượt like giảm về trạng thái ban đầu.
+Ví dụ 2: Ứng dụng đặt món ăn (liên quan đến dự án của bạn)
+Người dùng thêm món vào giỏ hàng, ứng dụng hiển thị món ngay lập tức trong giao diện.
+Trong nền, request được gửi để cập nhật giỏ hàng trên server.
+Nếu server cập nhật thành công, giữ nguyên trạng thái. Nếu thất bại (ví dụ: hết hàng), món đó sẽ bị xóa khỏi giỏ hàng kèm thông báo lỗi.
+Ưu điểm và Nhược điểm của Optimistic Update
+✅ Ưu điểm:
+
+Trải nghiệm mượt mà hơn vì người dùng không phải chờ phản hồi từ server.
+Giảm độ trễ và tăng tính tương tác trong ứng dụng.
+❌ Nhược điểm:
+
+Nếu request thất bại, cần có cơ chế rollback hợp lý.
+Có thể gây ra lỗi đồng bộ dữ liệu nếu không xử lý đúng cách
+
+------Caching & subscription trong rtk query
+luôn có 1 subscription theo dõi 1 query của component
+nếu component đó mất đi thì subscription cx sẽ mất và sau 60s nếu mà component đó ko được theo dõi thì query của nó cx sẽ tự động xóa caching

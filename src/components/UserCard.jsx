@@ -1,9 +1,13 @@
 import { socket } from "@context/SocketProvider";
 import { Check, Close, MessageOutlined, PersonAdd } from "@mui/icons-material";
 import { Avatar, Button as MUIButton, CircularProgress } from "@mui/material";
-import {  useSendFriendRequestMutation } from "@services/rootApi";
 import { Link } from "react-router-dom";
 import Button from "./Button";
+import {
+  useAcceptFriendRequestMutation,
+  useCancelFriendRequestMutation,
+  useSendFriendRequestMutation,
+} from "@services/friendApi";
 
 const UserCard = ({
   id,
@@ -13,7 +17,10 @@ const UserCard = ({
   requestReceived,
 }) => {
   const [sendFriendRequest, { isLoading }] = useSendFriendRequestMutation();
-
+  const [acceptFriendRequest, { isLoading: isAccepting }] =
+    useAcceptFriendRequestMutation();
+  const [cancelFriendRequest, { isLoading: isCanceling }] =
+    useCancelFriendRequestMutation();
   function getActionButtons() {
     if (isFriend) {
       return (
@@ -36,24 +43,24 @@ const UserCard = ({
     if (requestReceived) {
       return (
         <div className="space-x-1 mt-2">
-        <p className="font-bold">{fullName}</p>
-        <Button
-          variant="contained"
-          // onClick={() => acceptFriendRequest(id)}
-          icon={<Check className="mr-1" fontSize="small" />}
-          // isLoading={isAccepting}
-        >
-          Accept
-        </Button>
-        <Button
-          variant="outlined"
-          // onClick={() => cancelFriendRequest(id)}
-          icon={<Close className="mr-1" fontSize="small" />}
-          // isLoading={isCanceling}
-        >
-          Cancel
-        </Button>
-      </div>
+          <p className="font-bold">{fullName}</p>
+          <Button
+            variant="contained"
+            onClick={() => acceptFriendRequest(id)}
+            icon={<Check className="mr-1" fontSize="small" />}
+            isLoading={isAccepting}
+          >
+            Accept
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={() => cancelFriendRequest(id)}
+            icon={<Close className="mr-1" fontSize="small" />}
+            isLoading={isCanceling}
+          >
+            Cancel
+          </Button>
+        </div>
       );
     }
 
@@ -61,7 +68,7 @@ const UserCard = ({
       <MUIButton
         variant="outlined"
         size="small"
-        onClick={ async() => {
+        onClick={async () => {
           //unwrap is used to get the actual value from the promise
           await sendFriendRequest(id).unwrap();
           socket.emit("friendRequestSent", { reciverId: id });

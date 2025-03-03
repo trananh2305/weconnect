@@ -53,6 +53,14 @@ export const rootApi = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithReauth,
   tagTypes: ["POSTS", "USERS", "PENDING_FRIEND_REQUEST"],
+  //c1: tu dong xoa du lieu cu khi vuot qua thoi gian 20s ko truy cap
+  // keepUnusedDataFor: 20,
+  //c2: tu dong xoa du lieu cu khi vuot qua thoi gian 20s ko truy cap
+  // refetchOnMountOrArgChange: true,
+  //c3: tu dong xoa du lieu cu khi vuot qua thoi gian 20s ko truy cap, quay lai trc 20s van tu dong xoa de goi api moi, khi focus lai trang web
+  // refetchOnFocus: true,
+  // c4: tu dong refetch lai du lieu khi mat mang
+  // refetchOnReconnect: true,
   endpoints: (builder) => {
     return {
       // mutation laf thay doi du lieu vi du nhu post con query la get
@@ -99,28 +107,6 @@ export const rootApi = createApi({
           return "/auth-user";
         },
       }),
-      createPost: builder.mutation({
-        query: (formData) => {
-          return {
-            url: "/posts",
-            body: formData,
-            method: "POST",
-          };
-        },
-        // trigger tu dong goi api lay lai post
-        invalidatesTags: ["POSTS"],
-      }),
-      getPost: builder.query({
-        // tu hieu la get nho RTK
-        query: ({ limit, offset } = {}) => {
-          return {
-            url: "/posts",
-            method: "GET",
-            params: { limit, offset },
-          };
-        },
-        providesTags: [{ type: "POSTS" }],
-      }),
       searchUsers: builder.query({
         query: ({ limit, offset, searchQuery } = {}) => {
           //ma hoa chuoi de xu li
@@ -139,63 +125,7 @@ export const rootApi = createApi({
               ]
             : [{ type: "USERS", id: "LIST" }],
       }),
-      sendFriendRequest: builder.mutation({
-        query: (userId) => {
-          return {
-            url: "/friends/request",
-            body: {
-              friendId: userId,
-            },
-            method: "POST",
-          };
-        },
-        invalidatesTags: (result, error, args) => [{ type: "USERS", id: args }],
-      }),
-      getPendingRequest: builder.query({
-        query: () => {
-          return "/friends/pending";
-        },
-        providesTags: (result) =>
-          result
-            ? [
-                ...result.map(({ _id }) => ({
-                  type: "PENDING_FRIEND_REQUEST",
-                  id: _id,
-                })),
-                { type: "PENDING_FRIEND_REQUEST", id: "LIST" },
-              ]
-            : [{ type: "PENDING_FRIEND_REQUEST", id: "LIST" }],
-      }),
-      acceptFriendRequest: builder.mutation({
-        query: (userId) => {
-          return {
-            url: "/friends/accept",
-            body: {
-              friendId: userId,
-            },
-            method: "POST",
-          };
-        },
-        invalidatesTags: (result, error, args) => [
-          { type: "PENDING_FRIEND_REQUEST", id: args },
-          { type: "USERS", id: args },
-        ],
-      }),
-      cancelFriendRequest: builder.mutation({
-        query: (userId) => {
-          return {
-            url: "/friends/cancel",
-            body: {
-              friendId: userId,
-            },
-            method: "POST",
-          };
-        },
-        invalidatesTags: (result, error, args) => [
-          { type: "PENDING_FRIEND_REQUEST", id: args },
-          { type: "USERS", id: args },
-        ],
-      }), 
+      
     };
   },
 });
@@ -206,12 +136,7 @@ export const {
   useLoginMutation,
   useVerifyOTPMutation,
   useGetAuthUserQuery,
-  useCreatePostMutation,
   useRefreshTokenMutation,
-  useGetPostQuery,
   useSearchUsersQuery,
-  useSendFriendRequestMutation,
-  useGetPendingRequestQuery,
-  useAcceptFriendRequestMutation,
-  useCancelFriendRequestMutation,
+  
 } = rootApi;
