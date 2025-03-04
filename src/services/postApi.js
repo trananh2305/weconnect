@@ -41,7 +41,7 @@ export const postApi = rootApi.injectEndpoints({
             _v: 0,
           };
 
-          const pasthResult = dispatch(
+          const patchResult = dispatch(
             // Cập nhật danh sách bài viết dựa trên query "getPost" trước đó
             rootApi.util.updateQueryData(
               "getPost",
@@ -69,7 +69,7 @@ export const postApi = rootApi.injectEndpoints({
           } catch (error) {
             // Nếu có lỗi xảy ra, chúng ta sẽ undo lại việc thêm bài viết mới vào danh sách
             console.log(error);
-            pasthResult.undo();
+            patchResult.undo();
           }
         },
       }),
@@ -84,8 +84,90 @@ export const postApi = rootApi.injectEndpoints({
         },
         providesTags: [{ type: "POSTS" }],
       }),
+      likesPost: builder.mutation({
+        query: (postId) => {
+          return {
+            url: `/posts/${postId}/like`,
+            method: "POST",
+          };
+        },
+        onQueryStarted: async (
+          args,
+          { dispatch, queryFulfilled, getState }
+        ) => {
+          const store = getState();
+          const tempId = crypto.randomUUID();
+          console.log("store", store);
+          const patchResult = dispatch(
+            // Cập nhật danh sách bài viết dựa trên query "getPost" trước đó
+            rootApi.util.updateQueryData(
+              "getPost",
+              { limit: 10, offset: 0 },
+              (draft) => {
+                //draft là một mảng chứa danh sách bài viết dựa trên query "getPost" trước đó
+                // draft.unshift(newPost);
+                const currentPost = draft.find((p) => p._id === args);
+                if (currentPost) {
+                  currentPost.likes.push({
+                    author: {
+                      _id: store.auth.userInfo._id,
+                      fullName: store.auth.userInfo.fullName,
+                    },
+                    _id: tempId,
+                  });
+                }
+              }
+            )
+          );
+          try {
+            const { data } = await queryFulfilled;
+            dispatch(
+              rootApi.util.updateQueryData(
+                "getPost",
+                { limit: 10, offset: 0 },
+                (draft) => {
+                  const currentPost = draft.find((p) => p._id === args);
+                  if (currentPost) {
+                    let currentLike = currentPost.likes.find(
+                      (like) => like._id === tempId
+                    );
+                    if (currentLike) {
+                      currentPost.likes[currentLike] = {
+                        author: {
+                          _id: store.auth.userInfo._id,
+                          fullName: store.auth.userInfo.fullName,
+                        },
+                        _id: data._id,
+                        createdAt: data.createdAt,
+                        updatedAt: data.updatedAt,
+                      };
+                    }
+                  }
+                }
+              )
+            );
+          } catch (error) {
+            // Nếu có lỗi xảy ra, chúng ta sẽ undo lại việc thêm bài viết mới vào danh sách
+            console.log(error);
+            patchResult.undo();
+          }
+        },
+      }),
+      unLikesPost: builder.mutation({
+        query: (postId) => {
+          return {
+            url: `/posts/${postId}/likes`,
+            method: "DELETE",
+          };
+        },
+      }),
     };
   },
 });
 
-export const { useCreatePostMutation, useGetPostQuery } = postApi;
+export const {
+  useCreatePostMutation,
+  useGetPostQuery,
+  useLikesPostMutation,
+  useUnLikesPostMutation,
+} = postApi;

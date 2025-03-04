@@ -16,7 +16,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
 
   if (result?.error?.status === 401) {
-    if (result?.error?.data?.message === "Token has expired") {
+    if (result?.error?.data?.message === "Token has expired.") {
       const refreshToken = api.getState().auth.refreshToken;
       if (refreshToken) {
         // goi den server de verify de nhan lai access token moi
@@ -58,9 +58,9 @@ export const rootApi = createApi({
   //c2: tu dong xoa du lieu cu khi vuot qua thoi gian 20s ko truy cap
   // refetchOnMountOrArgChange: true,
   //c3: tu dong xoa du lieu cu khi vuot qua thoi gian 20s ko truy cap, quay lai trc 20s van tu dong xoa de goi api moi, khi focus lai trang web
-  // refetchOnFocus: true,
+  refetchOnFocus: true,
   // c4: tu dong refetch lai du lieu khi mat mang
-  // refetchOnReconnect: true,
+  refetchOnReconnect: true,
   endpoints: (builder) => {
     return {
       // mutation laf thay doi du lieu vi du nhu post con query la get

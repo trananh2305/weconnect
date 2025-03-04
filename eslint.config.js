@@ -4,7 +4,6 @@ import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import pluginJest from "eslint-plugin-jest";
-import plugin from "eslint-plugin-react";
 
 export default [
   { ignores: ["dist"] },
@@ -32,7 +31,7 @@ export default [
       ...reactHooks.configs.recommended.rules,
       "react/jsx-no-target-blank": "off",
       "react/prop-types": "off",
-      "react-refresh/only-export-components": "off",
+      // "react-refresh/only-export-components": "off",
     },
   },
   {
