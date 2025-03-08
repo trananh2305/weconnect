@@ -29,3 +29,15 @@ Có thể gây ra lỗi đồng bộ dữ liệu nếu không xử lý đúng c�
 ------Caching & subscription trong rtk query
 luôn có 1 subscription theo dõi 1 query của component
 nếu component đó mất đi thì subscription cx sẽ mất và sau 60s nếu mà component đó ko được theo dõi thì query của nó cx sẽ tự động xóa caching
+
+----entity Adapter
+giúp quản lý dữ liệu ở ngay trong redux và nó sẽ giúp chuẩn hóa dữ liệu theo dạng
+{
+    ids: [],
+    entities: [
+
+    ]
+}
+cung cấp thêm cho chúng ta các method để dễ dàng cập nhật các dữ liệu chuẩn hóa đó
+nó sẽ giúp chúng ta chuẩn hóa dữ liệu + tránh bị trùng lặp dữ liệu, giúp lưu trữ dữ liệu tập trung thay vì phải tạo ra các state ngoài(useLazyloadPost).
+luôn luôn chỉ có 1 nguồn dữ liệu duy nhất hay còn gọi là single source of truth

@@ -1,4 +1,15 @@
+import { createEntityAdapter } from "@reduxjs/toolkit";
 import { rootApi } from "./rootApi";
+
+//postsAdapter ko lưu một kiểu dữ liệu nào hết
+const postsAdapter = createEntityAdapter({
+  // định nghĩa id
+  selectId: (post) => post._id,
+  sortComparer: (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt),
+});
+
+// tạo initial state
+const initialState = postsAdapter.getInitialState();
 
 // injectEndpoints de them cac endpoint moi vao rootApi
 export const postApi = rootApi.injectEndpoints({
@@ -24,7 +35,6 @@ export const postApi = rootApi.injectEndpoints({
         ) => {
           const store = getState();
           const tempId = crypto.randomUUID();
-          console.log("store", store);
           // newPost là một object chứa thông tin của bài viết mới
           const newPost = {
             _id: tempId,
@@ -43,28 +53,23 @@ export const postApi = rootApi.injectEndpoints({
 
           const patchResult = dispatch(
             // Cập nhật danh sách bài viết dựa trên query "getPost" trước đó
-            rootApi.util.updateQueryData(
-              "getPost",
-              { limit: 10, offset: 0 },
-              (draft) => {
-                //draft là một mảng chứa danh sách bài viết dựa trên query "getPost" trước đó
-                draft.unshift(newPost);
-              }
-            )
+            rootApi.util.updateQueryData("getPost", "allPosts", (draft) => {
+              //draft là một mảng chứa danh sách bài viết dựa trên query "getPost" trước đó
+              // draft.unshift(newPost);
+              postsAdapter.addOne(draft, newPost);
+            })
           );
           try {
             const { data } = await queryFulfilled;
             dispatch(
-              rootApi.util.updateQueryData(
-                "getPost",
-                { limit: 10, offset: 0 },
-                (draft) => {
-                  const index = draft.findIndex((post) => post._id === tempId);
-                  if (index !== -1) {
-                    draft[index] = data;
-                  }
-                }
-              )
+              rootApi.util.updateQueryData("getPost", "allPosts", (draft) => {
+                // const index = draft.findIndex((post) => post._id === tempId);
+                // if (index !== -1) {
+                //   // draft[index] = data;
+                  postsAdapter.removeOne(draft, tempId);
+                  postsAdapter.addOne(draft, data);
+                // }
+              })
             );
           } catch (error) {
             // Nếu có lỗi xảy ra, chúng ta sẽ undo lại việc thêm bài viết mới vào danh sách
@@ -81,6 +86,16 @@ export const postApi = rootApi.injectEndpoints({
             method: "GET",
             params: { limit, offset },
           };
+        },
+        transformResponse: (response) => {
+          // hàm để đẩy dữ liệu mới vào entities, lấy dữ liệu cữ và so sánh sau đó gộp lại với dữ liệu mới
+          return postsAdapter.upsertMany(initialState, response);
+        },
+        // để 1 key duy nhất cho api
+        serializeQueryArgs: () => "allPosts",
+        // currentCache là dữ liệu đã caching trước đó, newItems: là dữ liệu ở lần gọi Api mới nhất, dùng merge để gộp lại
+        merge: (currentCache, newItems) => {
+          return postsAdapter.upsertMany(currentCache, newItems.entities);
         },
         providesTags: [{ type: "POSTS" }],
       }),

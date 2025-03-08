@@ -5,12 +5,12 @@ import { useSelector } from "react-redux";
 import { useTheme } from "@emotion/react";
 import { useMediaQuery } from "@mui/material";
 import { useState } from "react";
-import {  useSearchUsersQuery } from "@services/rootApi";
+import { useSearchUsersQuery } from "@services/rootApi";
 import { useRef } from "react";
 import { useEffect } from "react";
 import { useCallback } from "react";
 import { useMemo } from "react";
-import {  throttle } from "lodash";
+import { throttle } from "lodash";
 import { useGetPostQuery } from "@services/postApi";
 export const useLogout = () => {
   const dispatch = useDispatch();
@@ -37,41 +37,41 @@ export const useDetectLayout = () => {
 export const useLazyLoadPosts = () => {
   const [offset, setOffset] = useState(0);
   const limit = 10;
-  const [posts, setPosts] = useState([]);
   const [hasMore, setHasMore] = useState(true);
 
-  const { data, isSuccess, isFetching } = useGetPostQuery({ offset, limit });
+  const {
+    data = { ids: [], entities: [] },
+    isFetching,
+    refetch,
+  } = useGetPostQuery({ offset, limit });
 
-  const preDataRef = useRef();
+  const posts = (data.ids || []).map((id) => data.entities[id]);
+
+  const prePostCountRef = useRef(0);
 
   useEffect(() => {
-    if (isSuccess && data && preDataRef.current !== data) {
-      if (!data.length) {
+    if (!isFetching && data && hasMore) {
+      const currentPostCount = data.ids.length;
+      const newFetchCount = currentPostCount - prePostCountRef.current;
+      if (newFetchCount === 0) {
         setHasMore(false);
-        return;
+      } else {
+        prePostCountRef.current = currentPostCount;
       }
-      preDataRef.current = data;
-      setPosts((prev) => {
-        if (offset === 0) {
-          return data;
-        }
-        return [...prev, ...data];
-      });
     }
-  }, [isSuccess, data, offset]);
+  }, [isFetching, data, hasMore]);
 
   const loadMore = useCallback(() => {
     setOffset((offset) => offset + limit);
   }, []);
+  useEffect(() =>{
+    refetch();
+  }, [refetch, offset])
   useInfiniteScroll({
     hasMore,
     loadMore,
     isFetching,
     offset,
-    resetFunc: () => {
-      setOffset(0);
-      setHasMore(true);
-    },
   });
   return { hasMore, loadMore, isFetching, posts };
 };
@@ -115,7 +115,6 @@ export const useLazyLoadSearchFriends = ({ searchQuery }) => {
     loadMore,
     isFetching,
   });
-  console.log("friends: ", friends);
   return { hasMore, loadMore, isFetching, friends };
 };
 
@@ -123,8 +122,6 @@ export const useInfiniteScroll = ({
   hasMore,
   loadMore,
   isFetching,
-  offset,
-  resetFunc,
   threshold = 50,
   throttleTime = 300,
 }) => {
@@ -136,11 +133,6 @@ export const useInfiniteScroll = ({
       const scrollTop = document.documentElement.scrollTop; // để lấy ra chiều cao từ giao diện đến top của root
       const scrollHeight = document.documentElement.scrollHeight; //  để lấy được chiều cao root
       const clientHeight = document.documentElement.clientHeight; // để  lấy chiều cao giao diện
-
-      if (scrollTop < 100 && offset >  0){
-        resetFunc();
-        return;
-      }
 
       if (clientHeight + scrollTop + threshold >= scrollHeight && !isFetching) {
         loadMore();
