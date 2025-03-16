@@ -1,10 +1,9 @@
 import { useDetectLayout, useLogout, useUserInfo } from "@hooks/index";
 
-import { Notifications, Search, Menu as MenuIcon } from "@mui/icons-material";
+import {  Search, Menu as MenuIcon } from "@mui/icons-material";
 import {
   AppBar,
   Avatar,
-  Badge,
   IconButton,
   Menu,
   MenuItem,
@@ -15,6 +14,7 @@ import { toggleDrawer } from "@redux/slices/settingSlice";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import NotificationsPanel from "./NotificationsPanel";
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -108,11 +108,7 @@ const Header = () => {
                 <Search />
               </IconButton>
             )}
-            <IconButton size="medium">
-              <Badge badgeContent={4} color="error">
-                <Notifications />
-              </Badge>
-            </IconButton>
+            <NotificationsPanel/>
             <IconButton size="medium" onClick={handleUserProfileClick}>
               {/* <AccountCircle /> */}
               <Avatar className="!bg-primary-main">

@@ -13,6 +13,7 @@ const Post = ({
   comments = [],
   isLike = false,
   onLike = () => {},
+  onUnLike = () => {},
 }) => {
   return (
     <div className="card">
@@ -41,8 +42,10 @@ const Post = ({
       <div className="border-y border-dark-300 py-1 flex ">
         <Button
           size="small"
-          className={classNames("flex-1 !text-dark-100", { "!text-primary-main": isLike })}
-          onClick={() => onLike(postId)}
+          className={classNames("flex-1 !text-dark-100", {
+            "!text-primary-main": isLike,
+          })}
+          onClick={isLike ? () => onUnLike(postId) : () => onLike(postId)}
         >
           <ThumbUp
             fontSize="small"

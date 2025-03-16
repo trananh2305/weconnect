@@ -1,11 +1,17 @@
 import Post from "./Post";
 import Loading from "./Loading";
 import { useLazyLoadPosts, useUserInfo } from "@hooks/index";
-import { useLikesPostMutation } from "@services/postApi";
+import {
+  useLikesPostMutation,
+  useUnLikesPostMutation,
+} from "@services/postApi";
+import { useCreateNotificationMutation } from "@services/notificationApi";
 
 const PostList = () => {
   const { isFetching, posts } = useLazyLoadPosts();
   const [likesPost] = useLikesPostMutation();
+  const [unLikesPost] = useUnLikesPostMutation();
+  const [createNotification] = useCreateNotificationMutation();
   const { _id } = useUserInfo();
   return (
     <div className="flex flex-col gap-4">
@@ -20,8 +26,21 @@ const PostList = () => {
           comments={post.comments}
           postId={post._id}
           isLike={post.likes.some((like) => like.author?._id === _id)}
-          onLike={(postId) => {
-            likesPost(postId);
+          onLike={async (postId) => {
+            const res = await likesPost(postId).unwrap();
+
+            console.log("id",res)
+            if (post.author?._id !== _id) {
+              createNotification({
+                userId: post.author?._id,
+                postId,
+                notificationType: "like",
+                notificationTypeId: res._id,
+              });
+            }
+          }}
+          onUnLike={(postId) => {
+            unLikesPost(postId);
           }}
         />
       ))}

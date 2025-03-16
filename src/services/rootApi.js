@@ -52,7 +52,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 export const rootApi = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["POSTS", "USERS", "PENDING_FRIEND_REQUEST"],
+  tagTypes: ["POSTS", "USERS", "PENDING_FRIEND_REQUEST, GET_NOTI"],
   //c1: tu dong xoa du lieu cu khi vuot qua thoi gian 20s ko truy cap
   // keepUnusedDataFor: 20,
   //c2: tu dong xoa du lieu cu khi vuot qua thoi gian 20s ko truy cap

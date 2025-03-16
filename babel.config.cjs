@@ -1,5 +1,3 @@
-const { run } = require("jest");
-
 module.exports = {
   presets: [
     "@babel/preset-env",
