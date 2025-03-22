@@ -112,7 +112,6 @@ export const postApi = rootApi.injectEndpoints({
         ) => {
           const store = getState();
           const tempId = crypto.randomUUID();
-          console.log("store", store);
           const patchResult = dispatch(
             // Cập nhật danh sách bài viết dựa trên query "getPost" trước đó
             rootApi.util.updateQueryData("getPost", "allPosts", (draft) => {
@@ -150,20 +149,6 @@ export const postApi = rootApi.injectEndpoints({
                     }
                     return like;
                   });
-                  // let currentLike = currentPost.likes.find(
-                  //   (like) => like._id === tempId
-                  // );
-                  // if (currentLike) {
-                  //   currentPost.likes[currentLike] = {
-                  //     author: {
-                  //       _id: store.auth.userInfo._id,
-                  //       fullName: store.auth.userInfo.fullName,
-                  //     },
-                  //     _id: data._id,
-                  //     createdAt: data.createdAt,
-                  //     updatedAt: data.updatedAt,
-                  //   };
-                  // }
                 }
               })
             );
@@ -218,6 +203,68 @@ export const postApi = rootApi.injectEndpoints({
           }
         },
       }),
+      createComment: builder.mutation({
+        query: ({postId, comment}) => {
+          return {
+            url: `/posts/${postId}/comments`,
+            method: "POST",
+            body: { comment },
+          };
+        },
+        onQueryStarted: async (
+          args,
+          { dispatch, queryFulfilled, getState }
+        ) => {
+          const store = getState();
+          const tempId = crypto.randomUUID();
+          const patchResult = dispatch(
+            rootApi.util.updateQueryData("getPost", "allPosts", (draft) => {
+              const currentPost = draft.entities[args.postId];
+              if (currentPost) {
+                currentPost.comments.push({
+                  comment: args.comment,
+                  author: {
+                    _id: store.auth.userInfo._id,
+                    fullName: store.auth.userInfo.fullName,
+                  },
+                  _id: tempId,
+                  createdAt: new Date().toISOString(),
+                  updatedAt: new Date().toISOString(),
+                });
+              }
+              console.log("currentPost", currentPost);
+            })
+          );
+          try {
+            const { data } = await queryFulfilled;
+            dispatch(
+              rootApi.util.updateQueryData("getPost", "allPosts", (draft) => {
+                const currentPost = draft.entities[args.postId];
+                if (currentPost) {
+                  currentPost.comments = currentPost.comments.map((comment) => {
+                    if (comment._id === tempId) {
+                      return {
+                        author: {
+                          _id: store.auth.userInfo._id,
+                          fullName: store.auth.userInfo.fullName,
+                        },
+                        _id: data._id,
+                        createdAt: data.createdAt,
+                        updatedAt: data.updatedAt,
+                        comment: data.comment,
+                      };
+                    }
+                    return comment;
+                  });
+                }
+              })
+            );
+          } catch (error) {
+            console.log(error);
+            patchResult.undo();
+          }
+        },
+      })
     };
   },
 });
@@ -227,4 +274,5 @@ export const {
   useGetPostQuery,
   useLikesPostMutation,
   useUnLikesPostMutation,
+  useCreateCommentMutation
 } = postApi;

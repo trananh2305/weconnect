@@ -33,12 +33,15 @@ const NotificationsPanel = () => {
         horizontal: "right",
       }}
       // Trong Material-UI (MUI), thuộc tính classes được sử dụng để tùy chỉnh giao diện của component bằng cách thêm các class CSS tùy chỉnh.
-      classes={{ paper: "!min-w-80 !max-h-80 scroll-y-auto" }}
+      classes={{ paper: "!min-w-80 !max-h-80 overflow-y-auto" }}
     >
       {(data?.notifications || []).map((notification) => (
         <MenuItem key={notification._id} className="flex !justify-between">
           {notification.like && (
             <p>{notification.author?.fullName} liked a post</p>
+          )}
+          {notification.comment && (
+            <p>{notification.author?.fullName} commented a post</p>
           )}
           {!notification.seen && (
             <Circle fontSize="10" className="text-primary-main" />

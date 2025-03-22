@@ -1,7 +1,10 @@
+import { useUserInfo } from "@hooks/index";
 import { Comment, ThumbUp } from "@mui/icons-material";
-import { Avatar, Button } from "@mui/material";
+import { Avatar, Button, IconButton, TextField } from "@mui/material";
 import classNames from "classnames";
 import dayjs from "dayjs";
+import SendIcon from "@mui/icons-material/Send";
+import { useState } from "react";
 
 const Post = ({
   postId,
@@ -14,7 +17,11 @@ const Post = ({
   isLike = false,
   onLike = () => {},
   onUnLike = () => {},
+  onComment = () => {},
 }) => {
+  const [isCommentBoxOpen, setIsCommentBoxOpen] = useState(false);
+  const [comment, setComment] = useState("");
+  const userInfo = useUserInfo();
   return (
     <div className="card">
       <div className="flex gap-3 mb-3">
@@ -54,10 +61,59 @@ const Post = ({
           />{" "}
           Like
         </Button>
-        <Button size="small" className="flex-1 !text-dark-100">
+        <Button
+          size="small"
+          className="flex-1 !text-dark-100"
+          onClick={() => setIsCommentBoxOpen(!isCommentBoxOpen)}
+        >
           <Comment fontSize="small" className="mr-1" /> Comment
         </Button>
       </div>
+      {isCommentBoxOpen && (
+        <>
+          <div className="py-2 max-h-48 overflow-y-auto" style={{scrollbarWidth: "none"}}>
+            {[...comments].reverse().map((comment) => (
+              <div key={comment._id} className="flex gap-2 px-4 py-2">
+                <Avatar className="!bg-primary-main !size-6">
+                  {comment.author.fullName?.[0].toUpperCase()}
+                </Avatar>
+                <div>
+                  <div className="flex gap-1 items-center">
+                    <p className="font-bold">{comment.author.fullName}</p>
+                    <p className="text-dark-400 text-xs">
+                      {dayjs(createAt).format("DD/MM/YYYY HH:MM")}
+                    </p>
+                  </div>
+                  <p>{comment.comment}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="card flex gap-2 ">
+            {/* <AccountCircle /> */}
+            <Avatar className="!bg-primary-main !size-6">
+              {userInfo.fullName?.[0]?.toUpperCase()}
+            </Avatar>
+            <TextField
+              className="flex-1"
+              size="small"
+              placeholder="Comment here..."
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+            />
+            <IconButton
+              onClick={() => {
+                onComment(postId, comment);
+                setComment("");
+                setIsCommentBoxOpen(false);
+              }}
+              disabled={!comment}
+            >
+              <SendIcon className="text-primary-main" />
+            </IconButton>
+          </div>
+        </>
+      )}
     </div>
   );
 };
