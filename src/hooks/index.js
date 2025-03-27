@@ -12,6 +12,8 @@ import { useCallback } from "react";
 import { useMemo } from "react";
 import { throttle } from "lodash";
 import { useGetPostQuery } from "@services/postApi";
+import { useCreateNotificationMutation } from "@services/notificationApi";
+import { socket } from "@context/SocketProvider";
 export const useLogout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -64,9 +66,9 @@ export const useLazyLoadPosts = () => {
   const loadMore = useCallback(() => {
     setOffset((offset) => offset + limit);
   }, []);
-  useEffect(() =>{
+  useEffect(() => {
     refetch();
-  }, [refetch, offset])
+  }, [refetch, offset]);
   useInfiniteScroll({
     hasMore,
     loadMore,
@@ -148,4 +150,27 @@ export const useInfiniteScroll = ({
       handleScroll.cancel();
     };
   }, [handleScroll]);
+};
+
+export const useNotifications = ({
+  userId = null,
+  postId = null,
+  notificationType = null,
+  notificationTypeId = null,
+}) => {
+  const [createNotificationMutation] = useCreateNotificationMutation();
+  const { _id } = useUserInfo();
+  async function createNotification() {
+    if (userId === _id) return;
+
+    const res = await createNotificationMutation({
+      userId,
+      postId,
+      notificationType,
+      notificationTypeId,
+    }).unwrap();
+    socket.emit("CREATE_NOTIFICATION", res);
+  }
+
+  return { createNotification };
 };

@@ -1,3 +1,4 @@
+import { generateNotificationMessage } from "@libs/utils";
 import { Circle, Notifications } from "@mui/icons-material";
 import { Badge, IconButton, Menu, MenuItem } from "@mui/material";
 import { useGetNotificationsQuery } from "@services/notificationApi";
@@ -18,7 +19,7 @@ const NotificationsPanel = () => {
 
   const newNotiCount =
     (data?.notifications || []).filter((noti) => !noti.seen)?.length || 0;
-    console.log("newCOunt", newNotiCount)
+  console.log("newCOunt", newNotiCount);
   const renderNotificationsMenu = (
     <Menu
       open={!!anchorEl}
@@ -37,12 +38,7 @@ const NotificationsPanel = () => {
     >
       {(data?.notifications || []).map((notification) => (
         <MenuItem key={notification._id} className="flex !justify-between">
-          {notification.like && (
-            <p>{notification.author?.fullName} liked a post</p>
-          )}
-          {notification.comment && (
-            <p>{notification.author?.fullName} commented a post</p>
-          )}
+          <p>{generateNotificationMessage(notification)}</p>
           {!notification.seen && (
             <Circle fontSize="10" className="text-primary-main" />
           )}

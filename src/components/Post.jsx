@@ -108,6 +108,7 @@ const Post = ({
                 setIsCommentBoxOpen(false);
               }}
               disabled={!comment}
+              data-testid="send-comment"
             >
               <SendIcon className="text-primary-main" />
             </IconButton>

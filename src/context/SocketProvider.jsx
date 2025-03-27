@@ -1,5 +1,8 @@
+import { generateNotificationMessage } from "@libs/utils";
+import { openSnackbar } from "@redux/slices/snackbarSlice";
+import { rootApi } from "@services/rootApi";
 import { createContext, useContext, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
 
 //connect to server
@@ -15,6 +18,8 @@ export const useSocketContext = () => {
 };
 const SocketProvider = ({ children }) => {
   const token = useSelector((store) => store.auth.accessToken);
+
+  const dispatch = useDispatch();
   useEffect(() => {
     socket.auth = { token };
     // if autoConnect is false, you need to manually call socket.connect()
@@ -29,6 +34,23 @@ const SocketProvider = ({ children }) => {
       socket.off("connect");
       socket.off("disconnect");
       socket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("CREATE_NOTIFICATION_REQUEST", (data) => {
+      dispatch(
+        rootApi.util.updateQueryData("getNotifications", undefined, (draft) => {
+          draft.notifications.unshift(data);
+        })
+      );
+      dispatch(openSnackbar({ message: generateNotificationMessage(data), type: "info" }));
+    });
+
+    return () => {
+      socket.off("CREATE_NOTIFICATION_REQUEST");
     };
   }, []);
   return <SocketContext.Provider value={{}}>{children}</SocketContext.Provider>;
