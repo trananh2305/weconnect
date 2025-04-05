@@ -5,10 +5,12 @@ import classNames from "classnames";
 import dayjs from "dayjs";
 import SendIcon from "@mui/icons-material/Send";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Post = ({
   postId,
   fullName = "",
+  userId,
   createAt,
   content,
   image,
@@ -25,11 +27,15 @@ const Post = ({
   return (
     <div className="card">
       <div className="flex gap-3 mb-3">
-        <Avatar className="!bg-primary-main">
-          {fullName?.[0].toUpperCase()}
-        </Avatar>
+        <Link to={`/users/${userId}`}>
+          <Avatar className="!bg-primary-main">
+            {fullName?.[0].toUpperCase()}
+          </Avatar>
+        </Link>
         <div>
-          <p className="font-bold">{fullName}</p>
+          <Link to={`/users/${userId}`}>
+            <p className="font-bold">{fullName}</p>
+          </Link>
           <p className="text-dark-400 text-sm">
             {dayjs(createAt).format("DD/MM/YYYY HH:MM")}
           </p>
@@ -71,7 +77,10 @@ const Post = ({
       </div>
       {isCommentBoxOpen && (
         <>
-          <div className="py-2 max-h-48 overflow-y-auto" style={{scrollbarWidth: "none"}}>
+          <div
+            className="py-2 max-h-48 overflow-y-auto"
+            style={{ scrollbarWidth: "none" }}
+          >
             {[...comments].reverse().map((comment) => (
               <div key={comment._id} className="flex gap-2 px-4 py-2">
                 <Avatar className="!bg-primary-main !size-6">

@@ -1,12 +1,7 @@
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-// import HomePage from "./pages/HomePage.jsx";
-// import MovieDetail from "./pages/MovieDetail.jsx"; // Correct import for MovieDetail
 import RootLayout from "./pages/RootLayout.jsx";
-// import TVShowDetail from "./pages/TVShowDetail.jsx";
-// import ModalProvider from "./context/ModalProvider.jsx";
-// import PeoplePage from "./pages/PeoplePage.jsx";
 import { lazy } from "react";
 import { ThemeProvider } from "@emotion/react";
 import theme from "./configs/muiConfig.js";
@@ -24,6 +19,7 @@ import MessagePage from "@pages/MessagePage";
 import SearchUserPage from "@pages/SearchUserPage";
 
 const HomePage = lazy(() => import("./pages/HomePage.jsx"));
+const UserProfilePage = lazy(() => import("./pages/UserProfilePage"));
 
 const router = createBrowserRouter([
   {
@@ -40,12 +36,16 @@ const router = createBrowserRouter([
           },
           {
             path: "/messages",
-            element: <MessagePage/>
+            element: <MessagePage />,
           },
           {
             path: "/search/users",
-            element: <SearchUserPage/>
-          }
+            element: <SearchUserPage />,
+          },
+          {
+            path: "/users/:userId",
+            element: <UserProfilePage />,
+          },
         ],
       },
       {

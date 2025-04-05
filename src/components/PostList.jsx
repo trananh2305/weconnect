@@ -7,8 +7,8 @@ import {
   useUnLikesPostMutation,
 } from "@services/postApi";
 
-const PostList = () => {
-  const { isFetching, posts } = useLazyLoadPosts();
+const PostList = ({ userId }) => {
+  const { isFetching, posts } = useLazyLoadPosts(userId);
   const [likesPost] = useLikesPostMutation();
   const [unLikesPost] = useUnLikesPostMutation();
   const [createComment] = useCreateCommentMutation();
@@ -20,6 +20,7 @@ const PostList = () => {
         <Post
           key={post._id}
           fullName={post.author?.fullName}
+          userId={post.author?._id}
           createAt={post.createAt}
           content={post?.content}
           image={post?.image}
@@ -42,7 +43,7 @@ const PostList = () => {
           onComment={async (postId, comment) => {
             const res = await createComment({ postId, comment }).unwrap();
             createNotification({
-              userId: post.author?._id, 
+              userId: post.author?._id,
               postId,
               notificationType: "comment",
               notificationTypeId: res._id,

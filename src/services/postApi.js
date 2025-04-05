@@ -5,7 +5,7 @@ import { rootApi } from "./rootApi";
 const postsAdapter = createEntityAdapter({
   // định nghĩa id
   selectId: (post) => post._id,
-  sortComparer: (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt),
+  sortComparer: (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
 });
 
 // tạo initial state
@@ -87,6 +87,8 @@ export const postApi = rootApi.injectEndpoints({
             params: { limit, offset },
           };
         },
+        // xóa cache sau 0 giây khi không sử dụng
+        keepUnusedDataFor: 0,
         transformResponse: (response) => {
           // hàm để đẩy dữ liệu mới vào entities, lấy dữ liệu cữ và so sánh sau đó gộp lại với dữ liệu mới
           return postsAdapter.upsertMany(initialState, response);
@@ -112,50 +114,76 @@ export const postApi = rootApi.injectEndpoints({
         ) => {
           const store = getState();
           const tempId = crypto.randomUUID();
-          const patchResult = dispatch(
-            // Cập nhật danh sách bài viết dựa trên query "getPost" trước đó
-            rootApi.util.updateQueryData("getPost", "allPosts", (draft) => {
-              //draft là một mảng chứa danh sách bài viết dựa trên query "getPost" trước đó
-              // draft.unshift(newPost);
-              const currentPost = draft.entities[args];
-              if (currentPost) {
-                currentPost.likes.push({
-                  author: {
-                    _id: store.auth.userInfo._id,
-                    fullName: store.auth.userInfo.fullName,
-                  },
-                  _id: tempId,
-                });
-              }
-            })
+
+          // selectCachedArgsForQuery là hàm để lấy ra các tham số đã được cache cho query getPostByUserId
+          const userProfilePostArg = rootApi.util.selectCachedArgsForQuery(
+            store,
+            "getPostByUserId"
           );
-          try {
-            const { data } = await queryFulfilled;
-            dispatch(
-              rootApi.util.updateQueryData("getPost", "allPosts", (draft) => {
+
+          const patchResults = [];
+          const cachingPairs = [
+            ...userProfilePostArg.map((arg) => [
+              "getPostByUserId",
+              { userId: arg.userId },
+            ]),
+            ["getPost", "allPosts"],
+          ];
+
+          // userProfilePostArg là một mảng chứa các key để có thể
+          cachingPairs.forEach(([endpoint, key]) => {
+            const patchResult = dispatch(
+              // Cập nhật danh sách bài viết dựa trên query "getPost" trước đó
+              rootApi.util.updateQueryData(endpoint, key, (draft) => {
+                //draft là một mảng chứa danh sách bài viết dựa trên query "getPost" trước đó
+                // draft.unshift(newPost);
                 const currentPost = draft.entities[args];
                 if (currentPost) {
-                  currentPost.likes = currentPost.likes.map((like) => {
-                    if (like._id === tempId) {
-                      return {
-                        author: {
-                          _id: store.auth.userInfo._id,
-                          fullName: store.auth.userInfo.fullName,
-                        },
-                        _id: data._id,
-                        createdAt: data.createdAt,
-                        updatedAt: data.updatedAt,
-                      };
-                    }
-                    return like;
+                  currentPost.likes.push({
+                    author: {
+                      _id: store.auth.userInfo._id,
+                      fullName: store.auth.userInfo.fullName,
+                    },
+                    _id: tempId,
                   });
                 }
               })
             );
+            patchResults.push(patchResult);
+          });
+
+          try {
+            const { data } = await queryFulfilled;
+
+            cachingPairs.forEach(([endpoint, key]) => {
+              dispatch(
+                rootApi.util.updateQueryData(endpoint, key, (draft) => {
+                  const currentPost = draft.entities[args];
+                  if (currentPost) {
+                    currentPost.likes = currentPost.likes.map((like) => {
+                      if (like._id === tempId) {
+                        return {
+                          author: {
+                            _id: store.auth.userInfo._id,
+                            fullName: store.auth.userInfo.fullName,
+                          },
+                          _id: data._id,
+                          createdAt: data.createdAt,
+                          updatedAt: data.updatedAt,
+                        };
+                      }
+                      return like;
+                    });
+                  }
+                })
+              );
+            });
           } catch (error) {
             // Nếu có lỗi xảy ra, chúng ta sẽ undo lại việc thêm bài viết mới vào danh sách
             console.log(error);
-            patchResult.undo();
+            patchResults.forEach((patchResult) => {
+              patchResult.undo();
+            });
           }
         },
       }),
@@ -187,7 +215,7 @@ export const postApi = rootApi.injectEndpoints({
           );
           try {
             const { data } = await queryFulfilled;
-            console.log("data",data)
+            console.log("data", data);
             dispatch(
               rootApi.util.updateQueryData("getPost", "allPosts", (draft) => {
                 const currentPost = draft.entities[args];
@@ -204,7 +232,7 @@ export const postApi = rootApi.injectEndpoints({
         },
       }),
       createComment: builder.mutation({
-        query: ({postId, comment}) => {
+        query: ({ postId, comment }) => {
           return {
             url: `/posts/${postId}/comments`,
             method: "POST",
@@ -264,7 +292,52 @@ export const postApi = rootApi.injectEndpoints({
             patchResult.undo();
           }
         },
-      })
+      }),
+      getPostByUserId: builder.query({
+        // tu hieu la get nho RTK
+        query: ({ limit, offset, userId } = {}) => {
+          return {
+            url: `/posts/author/${userId}`,
+            method: "GET",
+            params: { limit, offset },
+          };
+        },
+        keepUnusedDataFor: 0,
+        transformResponse: (response) => {
+          // hàm để đẩy dữ liệu mới vào entities, lấy dữ liệu cữ và so sánh sau đó gộp lại với dữ liệu mới
+          const postNormalized = postsAdapter.upsertMany(
+            initialState,
+            response.posts
+          );
+          return {
+            ...postNormalized,
+            meta: {
+              total: response.total,
+              offset: response.offset,
+              limit: response.limit,
+            },
+          };
+        },
+        // để 1 key duy nhất cho api, muốn tùy biến theo tham số truyền vào thì dùng hàm
+        // nếu không muốn tùy biến thì dùng string
+        serializeQueryArgs: ({ queryArgs }) => ({
+          userId: queryArgs.userId,
+        }),
+        // currentCache là dữ liệu đã caching trước đó, newItems: là dữ liệu ở lần gọi Api mới nhất, dùng merge để gộp lại
+        merge: (currentCache, newItems) => {
+          return postsAdapter.upsertMany(currentCache, newItems.entities);
+        },
+        providesTags: (result) =>
+          result?.posts
+            ? [
+                ...result.posts.map(({ _id }) => ({
+                  type: "POSTS_AUTHOR",
+                  id: _id,
+                })),
+                { type: "POSTS_AUTHOR", id: "LIST" },
+              ]
+            : [{ type: "POSTS_AUTHOR", id: "LIST" }],
+      }),
     };
   },
 });
@@ -274,5 +347,6 @@ export const {
   useGetPostQuery,
   useLikesPostMutation,
   useUnLikesPostMutation,
-  useCreateCommentMutation
+  useCreateCommentMutation,
+  useGetPostByUserIdQuery,
 } = postApi;
