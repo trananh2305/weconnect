@@ -1,5 +1,5 @@
 
-import { useDetectLayout } from "@hooks/index";
+import { useDetectLayout, useUserInfo } from "@hooks/index";
 import { HomeOutlined, Hub, Language, LockPerson, Message, People } from "@mui/icons-material";
 import { Drawer, List, ListSubheader,  } from "@mui/material";
 import { toggleDrawer } from "@redux/slices/settingSlice";
@@ -29,6 +29,7 @@ const SideBar = () => {
 export default SideBar;
 
 const SideBarContent = () => {
+  const { _id: userId } = useUserInfo();
   return (
     <div className="w-64 flex flex-col gap-4 ">
       <List className="flex flex-col !py-3 !px-4 bg-white shadow rounded">
@@ -38,7 +39,7 @@ const SideBarContent = () => {
         <Link to="/messages" className="flex items-center gap-1">
           <Message fontSize="small" /> Messager
         </Link>
-        <Link to="/friends" className="flex items-center gap-1">
+        <Link to={`/users/${userId}/friends`} className="flex items-center gap-1">
           <People fontSize="small" /> Friends
         </Link>
         <Link to="/groups" className="flex items-center gap-1">

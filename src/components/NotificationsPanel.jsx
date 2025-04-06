@@ -3,6 +3,7 @@ import { Circle, Notifications } from "@mui/icons-material";
 import { Badge, IconButton, Menu, MenuItem } from "@mui/material";
 import { useGetNotificationsQuery } from "@services/notificationApi";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const NotificationsPanel = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -38,7 +39,12 @@ const NotificationsPanel = () => {
     >
       {(data?.notifications || []).map((notification) => (
         <MenuItem key={notification._id} className="flex !justify-between">
-          <p>{generateNotificationMessage(notification)}</p>
+          <Link
+            to={`/users/${notification.author?._id}`}
+            onClick={handleMenuClose}
+          >
+            {generateNotificationMessage(notification)}
+          </Link>
           {!notification.seen && (
             <Circle fontSize="10" className="text-primary-main" />
           )}

@@ -51,30 +51,54 @@ export const postApi = rootApi.injectEndpoints({
             _v: 0,
           };
 
-          const patchResult = dispatch(
-            // Cập nhật danh sách bài viết dựa trên query "getPost" trước đó
-            rootApi.util.updateQueryData("getPost", "allPosts", (draft) => {
-              //draft là một mảng chứa danh sách bài viết dựa trên query "getPost" trước đó
-              // draft.unshift(newPost);
-              postsAdapter.addOne(draft, newPost);
-            })
+          const userProfilePostArg = rootApi.util.selectCachedArgsForQuery(
+            store,
+            "getPostByUserId"
           );
-          try {
-            const { data } = await queryFulfilled;
-            dispatch(
-              rootApi.util.updateQueryData("getPost", "allPosts", (draft) => {
-                // const index = draft.findIndex((post) => post._id === tempId);
-                // if (index !== -1) {
-                //   // draft[index] = data;
-                postsAdapter.removeOne(draft, tempId);
-                postsAdapter.addOne(draft, data);
-                // }
+
+          const patchResults = [];
+          const cachingPairs = [
+            ...userProfilePostArg.map((arg) => [
+              "getPostByUserId",
+              { userId: arg.userId },
+            ]),
+            ["getPost", "allPosts"],
+          ];
+
+          // userProfilePostArg là một mảng chứa các key để có thể
+          cachingPairs.forEach(([endpoint, key]) => {
+            const patchResult = dispatch(
+              // Cập nhật danh sách bài viết dựa trên query "getPost" trước đó
+              rootApi.util.updateQueryData(endpoint, key, (draft) => {
+                //draft là một mảng chứa danh sách bài viết dựa trên query "getPost" trước đó
+                // draft.unshift(newPost);
+                postsAdapter.addOne(draft, newPost);
               })
             );
+            patchResults.push(patchResult);
+          });
+
+          try {
+            const { data } = await queryFulfilled;
+            cachingPairs.forEach(([endpoint, key]) => {
+              dispatch(
+                rootApi.util.updateQueryData(endpoint, key, (draft) => {
+                  // const index = draft.findIndex((post) => post._id === tempId);
+                  // if (index !== -1) {
+                  //   // draft[index] = data;
+                  postsAdapter.removeOne(draft, tempId);
+                  postsAdapter.addOne(draft, data);
+
+                  // }
+                })
+              );
+            });
           } catch (error) {
             // Nếu có lỗi xảy ra, chúng ta sẽ undo lại việc thêm bài viết mới vào danh sách
             console.log(error);
-            patchResult.undo();
+            patchResults.forEach((patchResult) => {
+              patchResult.undo();
+            });
           }
         },
       }),
@@ -245,51 +269,77 @@ export const postApi = rootApi.injectEndpoints({
         ) => {
           const store = getState();
           const tempId = crypto.randomUUID();
-          const patchResult = dispatch(
-            rootApi.util.updateQueryData("getPost", "allPosts", (draft) => {
-              const currentPost = draft.entities[args.postId];
-              if (currentPost) {
-                currentPost.comments.push({
-                  comment: args.comment,
-                  author: {
-                    _id: store.auth.userInfo._id,
-                    fullName: store.auth.userInfo.fullName,
-                  },
-                  _id: tempId,
-                  createdAt: new Date().toISOString(),
-                  updatedAt: new Date().toISOString(),
-                });
-              }
-              console.log("currentPost", currentPost);
-            })
+
+          const userProfilePostArg = rootApi.util.selectCachedArgsForQuery(
+            store,
+            "getPostByUserId"
           );
-          try {
-            const { data } = await queryFulfilled;
-            dispatch(
-              rootApi.util.updateQueryData("getPost", "allPosts", (draft) => {
+
+          const patchResults = [];
+          const cachingPairs = [
+            ...userProfilePostArg.map((arg) => [
+              "getPostByUserId",
+              { userId: arg.userId },
+            ]),
+            ["getPost", "allPosts"],
+          ];
+
+          // userProfilePostArg là một mảng chứa các key để có thể
+          cachingPairs.forEach(([endpoint, key]) => {
+            const patchResult = dispatch(
+              rootApi.util.updateQueryData(endpoint, key, (draft) => {
                 const currentPost = draft.entities[args.postId];
                 if (currentPost) {
-                  currentPost.comments = currentPost.comments.map((comment) => {
-                    if (comment._id === tempId) {
-                      return {
-                        author: {
-                          _id: store.auth.userInfo._id,
-                          fullName: store.auth.userInfo.fullName,
-                        },
-                        _id: data._id,
-                        createdAt: data.createdAt,
-                        updatedAt: data.updatedAt,
-                        comment: data.comment,
-                      };
-                    }
-                    return comment;
+                  currentPost.comments.push({
+                    comment: args.comment,
+                    author: {
+                      _id: store.auth.userInfo._id,
+                      fullName: store.auth.userInfo.fullName,
+                    },
+                    _id: tempId,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
                   });
                 }
+                console.log("currentPost", currentPost);
               })
             );
+            patchResults.push(patchResult);
+          });
+
+          try {
+            const { data } = await queryFulfilled;
+            cachingPairs.forEach(([endpoint, key]) => {
+              dispatch(
+                rootApi.util.updateQueryData(endpoint, key, (draft) => {
+                  const currentPost = draft.entities[args.postId];
+                  if (currentPost) {
+                    currentPost.comments = currentPost.comments.map(
+                      (comment) => {
+                        if (comment._id === tempId) {
+                          return {
+                            author: {
+                              _id: store.auth.userInfo._id,
+                              fullName: store.auth.userInfo.fullName,
+                            },
+                            _id: data._id,
+                            createdAt: data.createdAt,
+                            updatedAt: data.updatedAt,
+                            comment: data.comment,
+                          };
+                        }
+                        return comment;
+                      }
+                    );
+                  }
+                })
+              );
+            });
           } catch (error) {
             console.log(error);
-            patchResult.undo();
+            patchResults.forEach((patchResult) => {
+              patchResult.undo();
+            });
           }
         },
       }),

@@ -1,6 +1,6 @@
 import { useDetectLayout, useLogout, useUserInfo } from "@hooks/index";
 
-import {  Search, Menu as MenuIcon } from "@mui/icons-material";
+import { Search, Menu as MenuIcon } from "@mui/icons-material";
 import {
   AppBar,
   Avatar,
@@ -42,7 +42,11 @@ const Header = () => {
         horizontal: "right",
       }}
     >
-      <MenuItem>Profile</MenuItem>
+      <MenuItem>
+        <Link to={`/users/${userInfo._id}`} onClick={handleMenuClose}>
+          Profile
+        </Link>
+      </MenuItem>
       <MenuItem
         onClick={() => {
           logOut();
@@ -57,7 +61,7 @@ const Header = () => {
   };
   return (
     <>
-      <AppBar color="white" position="static" >
+      <AppBar color="white" position="static">
         <div className="flex justify-between items-center !min-h-fit container">
           {isMediumLayout ? (
             <IconButton onClick={() => dispatch(toggleDrawer())}>
@@ -108,7 +112,7 @@ const Header = () => {
                 <Search />
               </IconButton>
             )}
-            <NotificationsPanel/>
+            <NotificationsPanel />
             <IconButton size="medium" onClick={handleUserProfileClick}>
               {/* <AccountCircle /> */}
               <Avatar className="!bg-primary-main">
