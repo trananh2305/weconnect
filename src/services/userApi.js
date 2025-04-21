@@ -13,17 +13,49 @@ const userApi = rootApi.injectEndpoints({
           { type: "GET_USER_INFO_BY_ID", id: result._id },
         ],
       }),
-      //   createNotification: builder.mutation({
-      //     query: ({ userId, postId, notificationType, notificationTypeId }) => {
-      //       return {
-      //         url: "/notifications/create",
-      //         method: "POST",
-      //         body: { userId, postId, notificationType, notificationTypeId },
-      //       };
-      //     },
-      //   }),
+      uploadPhoto: builder.mutation({
+        query: (formData) => {
+          return {
+            url: "/users/upload-photo",
+            method: "POST",
+            body: formData,
+          };
+        },
+        invalidatesTags: [
+          { type: "GET_AUTH_USER" },
+          { type: "GET_USER_INFO_BY_ID" },
+        ],
+      }),
+      deletedPhoto: builder.mutation({
+        query: (isCover) => {
+          return {
+            url: "/users/reset-photo",
+            method: "DELETE",
+            body: {isCover},
+          };
+        },
+        invalidatesTags: [
+          { type: "GET_AUTH_USER" },
+          { type: "GET_USER_INFO_BY_ID" },
+        ],
+      }),
+      uploadInformProfile: builder.mutation({
+        query: (payload) => {
+          return {
+            url: "/users/update-profile",
+            method: "PATCH",
+            body: payload,
+          };
+        },
+        invalidatesTags: [{ type: "GET_AUTH_USER" }],
+      }),
     };
   },
 });
 
-export const { useGetUserInfoByIdQuery } = userApi;
+export const {
+  useGetUserInfoByIdQuery,
+  useUploadInformProfileMutation,
+  useDeletedPhotoMutation,
+  useUploadPhotoMutation
+} = userApi;

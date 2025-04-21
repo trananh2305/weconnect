@@ -1,17 +1,19 @@
-import { useUserInfo } from "@hooks/index";
+
 import { Comment, ThumbUp } from "@mui/icons-material";
-import { Avatar, Button, IconButton, TextField } from "@mui/material";
+import {  Button, IconButton, TextField } from "@mui/material";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import SendIcon from "@mui/icons-material/Send";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import AvatarUser from "./Avatar";
 
 const Post = ({
   postId,
   fullName = "",
   userId,
   createAt,
+  avatarSrc,
   content,
   image,
   likes = [],
@@ -23,14 +25,11 @@ const Post = ({
 }) => {
   const [isCommentBoxOpen, setIsCommentBoxOpen] = useState(false);
   const [comment, setComment] = useState("");
-  const userInfo = useUserInfo();
   return (
     <div className="card">
       <div className="flex gap-3 mb-3">
         <Link to={`/users/${userId}`}>
-          <Avatar className="!bg-primary-main">
-            {fullName?.[0].toUpperCase()}
-          </Avatar>
+          <AvatarUser name={fullName} imageUrl={avatarSrc} />
         </Link>
         <div>
           <Link to={`/users/${userId}`}>
@@ -83,9 +82,11 @@ const Post = ({
           >
             {[...comments].reverse().map((comment) => (
               <div key={comment._id} className="flex gap-2 px-4 py-2">
-                <Avatar className="!bg-primary-main !size-6">
-                  {comment.author.fullName?.[0].toUpperCase()}
-                </Avatar>
+                <AvatarUser
+                  name={comment.author?.fullName}
+                  imageUrl={comment.author?.image}
+                  className="!size-6"
+                />
                 <div>
                   <div className="flex gap-1 items-center">
                     <p className="font-bold">{comment.author.fullName}</p>
@@ -100,9 +101,7 @@ const Post = ({
           </div>
           <div className="card flex gap-2 ">
             {/* <AccountCircle /> */}
-            <Avatar className="!bg-primary-main !size-6">
-              {userInfo.fullName?.[0]?.toUpperCase()}
-            </Avatar>
+            <AvatarUser isMyAvtar={true} className="!size-6"/>
             <TextField
               className="flex-1"
               size="small"

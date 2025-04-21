@@ -6,13 +6,17 @@ const Button = ({
   variant = "outlined",
   icon,
   children,
+  className,
+  inputProps = {}
 }) => {
   return (
     <MUIButton
       variant={variant}
       size="small"
       onClick={onClick}
-      disabled={isLoading}
+      disabled={isLoading }
+      className={className}
+      {...inputProps}
     >
       {isLoading ? (
         <CircularProgress className="mr-1 animate-spin" size="16px" />

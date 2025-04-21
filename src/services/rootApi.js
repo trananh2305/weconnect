@@ -58,7 +58,8 @@ export const rootApi = createApi({
     "PENDING_FRIEND_REQUEST, GET_NOTI",
     "GET_USER_INFO_BY_ID",
     "POSTS_AUTHOR",
-    "FRIENDS"
+    "FRIENDS",
+    "GET_AUTH_USER"
   ],
   //c1: tu dong xoa du lieu cu khi vuot qua thoi gian 20s ko truy cap
   // keepUnusedDataFor: 20,
@@ -113,6 +114,7 @@ export const rootApi = createApi({
         query: () => {
           return "/auth-user";
         },
+        providesTags: [{type: "GET_AUTH_USER"}],
       }),
       searchUsers: builder.query({
         query: ({ limit, offset, searchQuery } = {}) => {

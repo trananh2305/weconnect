@@ -1,5 +1,4 @@
 import { Check, Close } from "@mui/icons-material";
-import { Avatar } from "@mui/material";
 import Loading from "./Loading";
 import { useEffect } from "react";
 import { socket } from "@context/SocketProvider";
@@ -9,17 +8,16 @@ import {
   useCancelFriendRequestMutation,
   useGetPendingRequestQuery,
 } from "@services/friendApi";
+import AvatarUser from "./Avatar";
 
-const FriendRequestItem = ({ fullName, id }) => {
+const FriendRequestItem = ({ fullName, id, imageUrl }) => {
   const [acceptFriendRequest, { isLoading: isAccepting }] =
     useAcceptFriendRequestMutation();
   const [cancelFriendRequest, { isLoading: isCanceling }] =
     useCancelFriendRequestMutation();
   return (
     <div className="flex gap-2">
-      <Avatar className="!bg-primary-main">
-        {fullName?.[0].toUpperCase()}
-      </Avatar>
+      <AvatarUser name={fullName} imageUrl={imageUrl} />
       <div className="space-x-1 mt-2">
         <p className="font-bold">{fullName}</p>
         <Button
@@ -75,6 +73,7 @@ const FriendRequests = () => {
             key={user._id}
             fullName={user.fullName}
             id={user._id}
+            imageUrl={user.image}
           />;
         })}
       </div>

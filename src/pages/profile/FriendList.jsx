@@ -20,6 +20,7 @@ const FriendList = () => {
             id={user._id}
             fullName={user.fullName}
             isShowAcctionBtn={false}
+           imageUrl={user.image} 
           />
         ))}
       </div>

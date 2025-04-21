@@ -1,6 +1,6 @@
+import AvatarUser from "@components/Avatar";
 import { ImageUploader } from "@components/PostCreation";
 import {
-  Avatar,
   Button,
   CircularProgress,
   DialogActions,
@@ -39,12 +39,7 @@ const NewPostDialog = ({ userInfo }) => {
     <div>
       <div>
         <div className="flex gap-2 items-center">
-          <Avatar
-            className="!bg-primary-main "
-            sx={{ width: "32px", height: "32px" }}
-          >
-            {userInfo.fullName?.[0]?.toUpperCase()}
-          </Avatar>
+          <AvatarUser isMyAvtar={true} className="!size-8"/>
           <p className="font-bold">{userInfo.fullName}</p>
         </div>
         <TextareaAutosize

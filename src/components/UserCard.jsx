@@ -6,7 +6,7 @@ import {
   PersonAdd,
   PersonRemove,
 } from "@mui/icons-material";
-import { Avatar, Button as MUIButton, CircularProgress } from "@mui/material";
+import {  Button as MUIButton, CircularProgress } from "@mui/material";
 import { Link } from "react-router-dom";
 import Button from "./Button";
 import {
@@ -15,6 +15,7 @@ import {
   useSendFriendRequestMutation,
   useUnFriendRequestMutation,
 } from "@services/friendApi";
+import AvatarUser from "./Avatar";
 
 export function UserActionButton({
   isFriend,
@@ -122,12 +123,11 @@ const UserCard = ({
   requestSent,
   requestReceived,
   isShowAcctionBtn = true,
+  imageUrl
 }) => {
   return (
     <div className="card  flex flex-col items-center">
-      <Avatar className="!bg-primary-main !w-12 !h-12 mb-3">
-        {fullName[0]?.toUpperCase()}
-      </Avatar>
+      <AvatarUser name={fullName} imageUrl={imageUrl} className="!size-12 mb-3"/>
       <Link to={`/users/${id}`} className="font-bold text-lg">
         {fullName}{" "}
       </Link>

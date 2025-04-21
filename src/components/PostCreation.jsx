@@ -1,10 +1,11 @@
 
 import { useUserInfo } from "@hooks/index";
-import { Avatar, Chip, Stack, TextField } from "@mui/material";
+import {  Chip, Stack, TextField } from "@mui/material";
 import { openDialog } from "@redux/slices/dialogSlice";
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { useDispatch } from "react-redux";
+import AvatarUser from "./Avatar";
 // upload image tu may len 
 export const ImageUploader = ({image, setImage}) => {
   const onDrop = useCallback((acceptedFiles) => {
@@ -49,9 +50,7 @@ const PostCreation = () => {
   return (
     <div className="card flex gap-2 ">
       {/* <AccountCircle /> */}
-      <Avatar className="!bg-primary-main">
-        {userInfo.fullName?.[0]?.toUpperCase()}
-      </Avatar>
+      <AvatarUser isMyAvtar={true}/>
       <TextField
         className="flex-1"
         size="small"

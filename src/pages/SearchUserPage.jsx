@@ -22,6 +22,7 @@ const SearchUserPage = () => {
             isFriend={user.isFriend}
             requestSent={user.requestSent}
             requestReceived={user.requestReceived}
+            imageUrl={user.image}
           />
         ))}
       </div>

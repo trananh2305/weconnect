@@ -48,7 +48,7 @@ const SideBarContent = () => {
       </List>
       <List className="flex flex-col !py-3 !px-4 bg-white shadow rounded">
         <ListSubheader className="!px-0 !leading-none">Settings</ListSubheader>
-        <Link to="/setting/account" className="flex items-center gap-1">
+        <Link to="/settings/account" className="flex items-center gap-1">
           <LockPerson fontSize="small" /> Account
         </Link>
         <Link to="/setting/languages" className="flex items-center gap-1">

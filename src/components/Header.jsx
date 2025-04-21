@@ -3,7 +3,6 @@ import { useDetectLayout, useLogout, useUserInfo } from "@hooks/index";
 import { Search, Menu as MenuIcon } from "@mui/icons-material";
 import {
   AppBar,
-  Avatar,
   IconButton,
   Menu,
   MenuItem,
@@ -15,6 +14,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import NotificationsPanel from "./NotificationsPanel";
+import AvatarUser from "./Avatar";
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -115,9 +115,7 @@ const Header = () => {
             <NotificationsPanel />
             <IconButton size="medium" onClick={handleUserProfileClick}>
               {/* <AccountCircle /> */}
-              <Avatar className="!bg-primary-main">
-                {userInfo.fullName?.[0]?.toUpperCase()}
-              </Avatar>
+              <AvatarUser isMyAvtar={true}/>
             </IconButton>
           </div>
         </div>
