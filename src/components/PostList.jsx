@@ -22,7 +22,7 @@ const PostList = ({ userId }) => {
           fullName={post.author?.fullName}
           avatarSrc={post.author?.image}
           userId={post.author?._id}
-          createAt={post.createAt}
+          createdAt={post.createdAt}
           content={post?.content}
           image={post?.image}
           likes={post.likes}

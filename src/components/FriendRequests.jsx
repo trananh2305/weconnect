@@ -15,6 +15,7 @@ const FriendRequestItem = ({ fullName, id, imageUrl }) => {
     useAcceptFriendRequestMutation();
   const [cancelFriendRequest, { isLoading: isCanceling }] =
     useCancelFriendRequestMutation();
+
   return (
     <div className="flex gap-2">
       <AvatarUser name={fullName} imageUrl={imageUrl} />
@@ -46,9 +47,9 @@ const FriendRequests = () => {
     data = [],
     isFetching,
     refetch,
-  } = useGetPendingRequestQuery(undefined, {
-    refetchOnMountOrArgChange: true,
-  });
+  } = useGetPendingRequestQuery(undefined, {});
+
+  console.log("frend requests", data);
   if (isFetching) {
     <Loading />;
   }
@@ -68,14 +69,14 @@ const FriendRequests = () => {
     <div className="card">
       <p className="font-bold mb-4">Friend Requests</p>
       <div className="space-y-4">
-        {data.slice(0, 3).map((user) => {
+        {data.slice(0, 3).map((user) => (
           <FriendRequestItem
             key={user._id}
             fullName={user.fullName}
             id={user._id}
-            imageUrl={user.image}
-          />;
-        })}
+            imageUrl={user.image || "https://placehold.co/1920x540"}
+          />
+        ))}
       </div>
     </div>
   );

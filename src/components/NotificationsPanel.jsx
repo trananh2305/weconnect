@@ -1,9 +1,60 @@
-import { generateNotificationMessage } from "@libs/utils";
+
 import { Circle, Notifications } from "@mui/icons-material";
 import { Badge, IconButton, Menu, MenuItem } from "@mui/material";
 import { useGetNotificationsQuery } from "@services/notificationApi";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import AvatarUser from "./Avatar";
+import TimeAgo from "./TimeAgo";
+
+const NotificationItem = ({ notification }) => {
+  if (notification.like)
+    return (
+      <div className="flex gap-1 items-center">
+        <AvatarUser
+          name={notification.author?.fullName}
+          imageUrl={notification.author?.image}
+          className="!inline-block"
+        />
+        <div>
+          <div>
+            <p className="inline-block font-semibold">
+              {" "}
+              {notification.author?.fullName}
+            </p>{" "}
+            liked a post
+          </div>
+          <TimeAgo
+            date={notification.createdAt}
+            className="text-xs text-dark-400 -mt-[1px] "
+          />
+        </div>
+      </div>
+    );
+  if (notification.comment)
+    return (
+      <div className="flex gap-1 items-center">
+        <AvatarUser
+          name={notification.author?.fullName}
+          imageUrl={notification.author?.image}
+        />
+        <div>
+          <div>
+            <p className="inline-block font-semibold">
+              {" "}
+              {notification.author?.fullName}
+            </p>{" "}
+            commented a post
+          </div>
+          <TimeAgo
+            date={notification.createdAt}
+            className="text-xs text-dark-400 -mt-[1px] "
+          />
+        </div>
+      </div>
+    );
+  return "";
+};
 
 const NotificationsPanel = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -43,10 +94,10 @@ const NotificationsPanel = () => {
             to={`/users/${notification.author?._id}`}
             onClick={handleMenuClose}
           >
-            {generateNotificationMessage(notification)}
+            <NotificationItem notification={notification} />
           </Link>
           {!notification.seen && (
-            <Circle fontSize="10" className="text-primary-main" />
+            <Circle className="text-primary-main ml-2 !size-2" />
           )}
         </MenuItem>
       ))}

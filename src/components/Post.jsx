@@ -2,17 +2,17 @@
 import { Comment, ThumbUp } from "@mui/icons-material";
 import {  Button, IconButton, TextField } from "@mui/material";
 import classNames from "classnames";
-import dayjs from "dayjs";
 import SendIcon from "@mui/icons-material/Send";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import AvatarUser from "./Avatar";
+import TimeAgo from "./TimeAgo";
 
 const Post = ({
   postId,
   fullName = "",
   userId,
-  createAt,
+  createdAt,
   avatarSrc,
   content,
   image,
@@ -35,9 +35,9 @@ const Post = ({
           <Link to={`/users/${userId}`}>
             <p className="font-bold">{fullName}</p>
           </Link>
-          <p className="text-dark-400 text-sm">
-            {dayjs(createAt).format("DD/MM/YYYY HH:MM")}
-          </p>
+          <div className="text-dark-400 text-sm">
+            <TimeAgo date={createdAt}/>
+          </div>
         </div>
       </div>
       <p className="mb-1">{content}</p>
@@ -90,9 +90,9 @@ const Post = ({
                 <div>
                   <div className="flex gap-1 items-center">
                     <p className="font-bold">{comment.author.fullName}</p>
-                    <p className="text-dark-400 text-xs">
-                      {dayjs(createAt).format("DD/MM/YYYY HH:MM")}
-                    </p>
+                    <div className="text-dark-400 text-xs">
+                      <TimeAgo date={comment.createdAt}/>
+                    </div>
                   </div>
                   <p>{comment.comment}</p>
                 </div>
@@ -113,7 +113,7 @@ const Post = ({
               onClick={() => {
                 onComment(postId, comment);
                 setComment("");
-                setIsCommentBoxOpen(false);
+                // setIsCommentBoxOpen(false);
               }}
               disabled={!comment}
               data-testid="send-comment"

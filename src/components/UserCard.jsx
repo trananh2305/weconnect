@@ -6,7 +6,7 @@ import {
   PersonAdd,
   PersonRemove,
 } from "@mui/icons-material";
-import {  Button as MUIButton, CircularProgress } from "@mui/material";
+import { Button as MUIButton, CircularProgress } from "@mui/material";
 import { Link } from "react-router-dom";
 import Button from "./Button";
 import {
@@ -99,9 +99,10 @@ export function UserActionButton({
       variant="outlined"
       size="small"
       onClick={async () => {
-        //unwrap is used to get the actual value from the promise
         await sendFriendRequest(userId).unwrap();
-        socket.emit("friendRequestSent", { reciverId: userId });
+        socket.emit("friendRequestSent", {
+          receiverId: userId,
+        });
       }}
       disabled={isAdding}
     >
@@ -123,11 +124,15 @@ const UserCard = ({
   requestSent,
   requestReceived,
   isShowAcctionBtn = true,
-  imageUrl
+  imageUrl,
 }) => {
   return (
     <div className="card  flex flex-col items-center">
-      <AvatarUser name={fullName} imageUrl={imageUrl} className="!size-12 mb-3"/>
+      <AvatarUser
+        name={fullName}
+        imageUrl={imageUrl}
+        className="!size-12 mb-3"
+      />
       <Link to={`/users/${id}`} className="font-bold text-lg">
         {fullName}{" "}
       </Link>

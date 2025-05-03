@@ -7,7 +7,7 @@ const AvatarUser = ({ className, isMyAvtar = false, name, imageUrl }) => {
   const userName = isMyAvtar ? fullName : name;
   const avatarImage = isMyAvtar ? image: imageUrl;
   return (
-    <Avatar className={`!bg-primary-main ${className}`} src={avatarImage}>
+    <Avatar className={`!bg-primary-main !flex !justify-center !items-center ${className}`} src={avatarImage}>
       {userName?.[0].toUpperCase()}
     </Avatar>
   );

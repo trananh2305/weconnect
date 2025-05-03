@@ -59,13 +59,12 @@ export const useLazyLoadPosts = (userId) => {
 
   const posts = (data.ids || []).map((id) => data.entities[id]);
 
-
   const prePostCountRef = useRef(0);
 
   useEffect(() => {
     if (!isFetching && data && hasMore) {
       if (userId) {
-        if (data.ids.length === data.meta.total){
+        if (data.ids.length === data.meta.total) {
           setHasMore(false);
         }
       } else {
@@ -97,42 +96,48 @@ export const useLazyLoadPosts = (userId) => {
 
 export const useLazyLoadSearchFriends = ({ searchQuery }) => {
   const [offset, setOffset] = useState(0);
-  let limit = 10;
-  const [friends, setFriends] = useState([]);
+  const limit = 10;
   const [hasMore, setHasMore] = useState(true);
+  console.log("offset", offset);
 
-  const { data, isSuccess, isFetching } = useSearchUsersQuery({
+  const { data, isFetching, refetch } = useSearchUsersQuery({
     offset,
     limit,
     searchQuery,
   });
-  console.log("data: ", data);
-  const preDataRef = useRef();
+
+  const [friends, setFriends] = useState([]);
 
   useEffect(() => {
-    if ((isSuccess && data?.users) || preDataRef.current !== data?.users) {
-      console.log("aaaaaa");
-
-      preDataRef.current = data?.users;
+    if (data) {
       setFriends((prev) => {
-        return [...prev, ...data.users];
+        const newFriends = data.users.filter(
+          (friend) => !prev.some((f) => f._id === friend._id)
+        );
+        return [...prev, ...newFriends];
       });
-      if (data.total <= offset + data.users.length) {
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (!isFetching && data && hasMore) {
+      if (friends.length === data.total) {
         setHasMore(false);
-        return;
       }
     }
-  }, [isSuccess, data?.users, data?.total, offset]);
+  }, [isFetching, data, hasMore]);
 
   const loadMore = useCallback(() => {
-    if (hasMore && data?.users?.length) {
-      setOffset((offset) => offset + limit);
-    }
-  }, [hasMore, data?.users?.length, limit]);
+    setOffset((offset) => offset + limit);
+  }, []);
+  useEffect(() => {
+    refetch();
+  }, [refetch, offset]);
   useInfiniteScroll({
     hasMore,
     loadMore,
     isFetching,
+    offset,
   });
   return { hasMore, loadMore, isFetching, friends };
 };
