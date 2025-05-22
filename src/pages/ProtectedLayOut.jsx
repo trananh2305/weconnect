@@ -14,7 +14,7 @@ const ProtectedLayOut = () => {
       dispatch(saveUserInfo(response.data));
     }
   }, [response.isSuccess, response.data, dispatch]);
-  console.log({ response });
+
   return (
     <SocketProvider>
       <div>

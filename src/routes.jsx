@@ -11,6 +11,7 @@ import About from "@pages/profile/About";
 import FriendList from "@pages/profile/FriendList";
 import { lazy } from "react";
 import AccountSettings from "@pages/AccountSettings.jsx";
+import ChatDetail from "@components/ChatDetail.jsx";
 
 const HomePage = lazy(() => import("./pages/HomePage.jsx"));
 const UserProfilePage = lazy(() => import("./pages/profile/UserProfilePage.jsx"));
@@ -30,6 +31,12 @@ export const router = createBrowserRouter([
             {
               path: "/messages",
               element: <MessagePage />,
+              children: [
+                {
+                  path: ':userId',
+                  element: <ChatDetail/>
+                }
+              ]
             },
             {
               path: "/search/users",

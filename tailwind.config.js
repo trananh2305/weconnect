@@ -11,7 +11,8 @@ export default {
           100:'#4B465C',
           200: '#F8F7FA',
           300: '#DBDADE',
-          400: '#909090'
+          400: '#909090',
+          600: "#ECECEE",
         },
         primary:{
           main:"#246AA3"

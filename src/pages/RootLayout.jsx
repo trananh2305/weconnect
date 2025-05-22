@@ -7,11 +7,8 @@ import { closeSnackbar } from "@redux/slices/snackbarSlice";
 import Loading from "@components/Loading";
 const RootLayout = () => {
   const dispatch = useDispatch();
-  const data = useSelector((state) => state.snackbar);
-  console.log({ data });
   // lay ra du lieu tu store
   const { open, type, message } = useSelector((state) => {
-    console.log({ state });
     return state.snackbar;
   });
 

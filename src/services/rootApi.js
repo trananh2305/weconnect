@@ -59,7 +59,9 @@ export const rootApi = createApi({
     "GET_USER_INFO_BY_ID",
     "POSTS_AUTHOR",
     "FRIENDS",
-    "GET_AUTH_USER"
+    "GET_AUTH_USER",
+    "MESSAGES",
+    "CONVERSATIONS",
   ],
   //c1: tu dong xoa du lieu cu khi vuot qua thoi gian 20s ko truy cap
   // keepUnusedDataFor: 20,

@@ -59,7 +59,7 @@ const NotificationItem = ({ notification }) => {
 const NotificationsPanel = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const { data = {} } = useGetNotificationsQuery();
-  console.log("noti", data);
+
 
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -71,7 +71,7 @@ const NotificationsPanel = () => {
 
   const newNotiCount =
     (data?.notifications || []).filter((noti) => !noti.seen)?.length || 0;
-  console.log("newCOunt", newNotiCount);
+
   const renderNotificationsMenu = (
     <Menu
       open={!!anchorEl}
