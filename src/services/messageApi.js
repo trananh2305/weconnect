@@ -27,6 +27,7 @@ export const messageApi = rootApi.injectEndpoints({
             method: "PUT",
           };
         },
+        invalidatesTags: ["CONVERSATIONS"]
       }),
       getConversations: builder.query({
         query: () => {
