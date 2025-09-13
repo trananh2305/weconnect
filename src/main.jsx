@@ -12,15 +12,16 @@ import { PersistGate } from "redux-persist/integration/react";
 import Dialog from "@components/dialog/Dialog";
 import Loading from "@components/Loading";
 import { router } from "./routes";
+import VideoCallProvider from "@context/VideoCallProvider";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
     <PersistGate loading={<Loading />} persistor={persistor}>
       <ThemeProvider theme={theme}>
-        {/* <ModalProvider> */}
-        <RouterProvider router={router}></RouterProvider>
-        <Dialog />
-        {/* </ModalProvider> */}
+        <VideoCallProvider>
+          <RouterProvider router={router}></RouterProvider>
+          <Dialog />
+        </VideoCallProvider>
       </ThemeProvider>
     </PersistGate>
   </Provider>

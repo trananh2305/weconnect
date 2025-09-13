@@ -8,6 +8,8 @@ import classNames from "classnames";
 import { Circle } from "@mui/icons-material";
 
 const ConversationList = () => {
+  // pollingInterval: 2000 => moi 2s no se tu dong goi lai api 1 lan
+  // const { data = [], isLoading } = useGetConversationsQuery(undefined, {pollingInterval:2000});
   const { data = [], isLoading } = useGetConversationsQuery();
 
   const { _id } = useUserInfo();

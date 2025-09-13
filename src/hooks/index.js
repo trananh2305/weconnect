@@ -175,11 +175,11 @@ export const useInfiniteScroll = ({
 };
 
 export const useNotifications = ({
-  userId = null,
-  postId = null,
-  notificationType = null,
-  notificationTypeId = null,
-}) => {
+  userId ,
+  postId ,
+  notificationType,
+  notificationTypeId,
+ } ) => {
   const [createNotificationMutation] = useCreateNotificationMutation();
   const { _id } = useUserInfo();
   async function createNotification() {
@@ -191,7 +191,7 @@ export const useNotifications = ({
       notificationType,
       notificationTypeId,
     }).unwrap();
-    socket.emit("CREATE_NOTIFICATION", res);
+    socket.emit("CREATE_NOTIFICATION", {...res, testing: false});
   }
 
   return { createNotification };

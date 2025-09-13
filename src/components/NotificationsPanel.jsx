@@ -1,4 +1,3 @@
-
 import { Circle, Notifications } from "@mui/icons-material";
 import { Badge, IconButton, Menu, MenuItem } from "@mui/material";
 import { useGetNotificationsQuery } from "@services/notificationApi";
@@ -7,7 +6,7 @@ import { Link } from "react-router-dom";
 import AvatarUser from "./Avatar";
 import TimeAgo from "./TimeAgo";
 
-const NotificationItem = ({ notification }) => {
+const NotificationItem = ({ notification, onClick }) => {
   if (notification.like)
     return (
       <div className="flex gap-1 items-center">
@@ -53,13 +52,36 @@ const NotificationItem = ({ notification }) => {
         </div>
       </div>
     );
+  if (notification.message)
+    return (
+      <Link to={`/users/${notification.author?._id}`} onClick={onClick}>
+        <div className="flex gap-1 items-center">
+          <AvatarUser
+            name={notification.author?.fullName}
+            imageUrl={notification.author?.image}
+          />
+          <div>
+            <div>
+              <p className="inline-block font-semibold">
+                {" "}
+                {notification.author?.fullName}
+              </p>{" "}
+              send a message
+            </div>
+            <TimeAgo
+              date={notification.createdAt}
+              className="text-xs text-dark-400 -mt-[1px] "
+            />
+          </div>
+        </div>
+      </Link>
+    );
   return "";
 };
 
 const NotificationsPanel = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const { data = {} } = useGetNotificationsQuery();
-
 
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -90,12 +112,8 @@ const NotificationsPanel = () => {
     >
       {(data?.notifications || []).map((notification) => (
         <MenuItem key={notification._id} className="flex !justify-between">
-          <Link
-            to={`/users/${notification.author?._id}`}
-            onClick={handleMenuClose}
-          >
-            <NotificationItem notification={notification} />
-          </Link>
+          <NotificationItem notification={notification} onClick={handleMenuClose}/>
+
           {!notification.seen && (
             <Circle className="text-primary-main ml-2 !size-2" />
           )}

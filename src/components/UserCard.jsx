@@ -45,6 +45,7 @@ export function UserActionButton({
             await unFriendRequest(userId).unwrap();
           }}
           isLoading={isUnFriending}
+          
         >
           {" "}
           UnFriend
@@ -53,6 +54,7 @@ export function UserActionButton({
           variant="contained"
           size="small"
           icon={<MessageOutlined className="mr-1" fontSize="small" />}
+          inputProps={{component: Link, to: `/messages/${userId}`}}
         >
           {" "}
           Message

@@ -46,7 +46,40 @@ const SocketProvider = ({ children }) => {
           draft.notifications.unshift(data);
         })
       );
-      dispatch(openSnackbar({ message: generateNotificationMessage(data), type: "info" }));
+      dispatch(
+        openSnackbar({
+          message: generateNotificationMessage(data),
+          type: "info",
+        })
+      );
+    });
+
+    socket.on("SEND_MESSAGE", (data) => {
+      dispatch(
+        rootApi.util.updateQueryData(
+          "getMessages",
+          data.sender._id,
+          (draft) => {
+            draft.messages.push(data);
+          }
+        )
+      ); // the message will be "Invalid username"
+
+      dispatch(
+        rootApi.util.updateQueryData("getConversations", undefined, (draft) => {
+          let currentConversationIndex = draft.findIndex(
+            (message) =>
+              message.sender._id === data.sender._id ||
+              message.receiver._id === data.sender._id
+          );
+
+          if (currentConversationIndex !== -1) {
+            draft.splice(currentConversationIndex, 1);
+            return ;
+          }
+          draft.unshift(data);
+        })
+      ); // th
     });
 
     return () => {
